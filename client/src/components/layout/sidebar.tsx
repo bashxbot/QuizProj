@@ -15,47 +15,27 @@ export default function Sidebar({ currentSection, onSectionChange }: SidebarProp
   ];
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-64 glass-morphism border-r border-primary/20 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/2 via-transparent to-accent/2"></div>
-      <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-primary/5 blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-20 right-10 w-24 h-24 rounded-full bg-accent/5 blur-2xl animate-pulse delay-1000"></div>
-      
-      <div className="flex-1 flex flex-col pt-8 pb-4 overflow-y-auto relative z-10">
+    <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-card border-r border-border">
+      <div className="flex-1 flex flex-col pt-6 pb-4 overflow-y-auto">
         <div className="flex items-center flex-shrink-0 px-6 mb-8">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-xl blur opacity-75 animate-pulse"></div>
-            <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border border-primary/30">
-              <Brain className="h-6 w-6 text-primary float" />
-            </div>
+          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Brain className="h-5 w-5 text-primary" />
           </div>
-          <span className="text-xl font-black gradient-text ml-3">QuizMaster Pro</span>
+          <span className="text-lg font-semibold text-foreground ml-3">QuizMaster Pro</span>
         </div>
         
-        <nav className="mt-4 flex-1 px-4 space-y-2">
+        <nav className="mt-4 flex-1 px-4 space-y-1">
           {navItems.map((item) => (
             <button
               key={item.key}
-              className={`group flex items-center px-4 py-4 text-sm font-semibold rounded-xl transition-all duration-300 w-full text-left relative overflow-hidden ${
-                currentSection === item.key
-                  ? "glass-morphism border border-primary/30 text-primary shadow-lg shadow-primary/10"
-                  : "text-foreground hover:glass-effect hover:text-primary hover:scale-105"
+              className={`nav-item w-full text-left flex items-center ${
+                currentSection === item.key ? "active" : ""
               }`}
               onClick={() => onSectionChange(item.key)}
               data-testid={`sidebar-${item.key}`}
             >
-              <div className={`absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ${
-                currentSection === item.key ? "opacity-100" : ""
-              }`}></div>
-              <i className={`${item.icon} mr-4 relative z-10 ${
-                currentSection === item.key 
-                  ? "text-primary sparkle" 
-                  : "text-muted-foreground group-hover:text-primary"
-              }`}></i>
-              <span className="relative z-10">{item.label}</span>
-              {currentSection === item.key && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-primary pulse-glow"></div>
-              )}
+              <i className={`${item.icon} mr-3 text-sm`}></i>
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>

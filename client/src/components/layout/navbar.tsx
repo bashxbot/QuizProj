@@ -73,40 +73,31 @@ export default function Navbar({ currentSection, onSectionChange }: NavbarProps)
   return (
     <>
       {/* Desktop Navbar */}
-      <nav className="glass-morphism border-b border-primary/20 sticky top-0 z-50 backdrop-blur-xl bg-background/80">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-accent/5"></div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <nav className="bg-card border-b border-border sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
-                <div className="relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-xl blur opacity-75 group-hover:opacity-100 animate-pulse"></div>
-                  <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border border-primary/30">
-                    <Brain className="h-6 w-6 text-primary animate-bounce" style={{ animationDuration: "2s" }} />
-                  </div>
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Brain className="h-5 w-5 text-primary" />
                 </div>
-                <span className="text-xl font-black gradient-text">QuizMaster Pro</span>
+                <span className="text-lg font-semibold text-foreground">QuizMaster Pro</span>
               </div>
             </div>
             
             {!isMobile && (
-              <div className="hidden md:flex items-center space-x-6">
+              <div className="hidden md:flex items-center space-x-2">
                 {navItems.map((item) => (
                   <button
                     key={item.key}
-                    className={`relative group px-4 py-2 rounded-lg transition-all duration-300 ${
-                      currentSection === item.key 
-                        ? "text-primary bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/30" 
-                        : "text-foreground hover:text-primary hover:bg-gradient-to-r hover:from-primary/5 hover:to-accent/5"
+                    className={`nav-item flex items-center ${
+                      currentSection === item.key ? "active" : ""
                     }`}
                     onClick={() => onSectionChange(item.key)}
                     data-testid={`nav-${item.key}`}
                   >
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative flex items-center">
-                      <i className={`${item.icon} mr-2`}></i>
-                      {item.label}
-                    </div>
+                    <i className={`${item.icon} mr-2`}></i>
+                    {item.label}
                   </button>
                 ))}
               </div>

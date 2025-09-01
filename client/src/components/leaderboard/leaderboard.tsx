@@ -26,65 +26,56 @@ export default function Leaderboard() {
   const userEntry = leaderboard?.find(entry => entry.username === user?.username);
 
   return (
-    <div className="space-y-8 relative">
-      {/* Floating background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-20 w-40 h-40 rounded-full bg-yellow-500/3 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-20 w-60 h-60 rounded-full bg-primary/3 blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-accent/2 blur-3xl animate-pulse delay-2000"></div>
-      </div>
-      
-      <div className="mb-8 relative z-10">
-        <h1 className="text-4xl font-bold gradient-text mb-4 animate-gradient-x">🏆 Leaderboard</h1>
-        <p className="text-muted-foreground text-lg">See how you stack up against other quiz masters</p>
-        <div className="mt-4 h-1 w-32 bg-gradient-to-r from-yellow-500 via-primary to-accent rounded-full pulse-glow"></div>
+    <div className="space-y-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Leaderboard</h1>
+        <p className="text-muted-foreground">See how you stack up against other quiz masters</p>
       </div>
 
       {/* Top 3 Podium */}
       {topThree.length >= 3 && (
-        <Card className="glass-morphism border-0 shadow-2xl relative z-10 enhanced-glow">
-          <CardContent className="p-12 relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-transparent to-primary/5"></div>
-            <div className="flex justify-center items-end space-x-12 relative z-10">
+        <Card className="card">
+          <CardContent className="p-8">
+            <div className="flex justify-center items-end space-x-8">
               {/* 2nd Place */}
-              <div className="text-center group" data-testid="podium-second">
-                <div className="bg-gradient-to-br from-gray-400/30 to-gray-500/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-gray-400/40 shadow-lg shadow-gray-400/20 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl font-black text-gray-300">
+              <div className="text-center" data-testid="podium-second">
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3 border-2 border-gray-300">
+                  <span className="text-lg font-bold text-gray-600">
                     {topThree[1]?.username.slice(0, 2).toUpperCase()}
                   </span>
                 </div>
-                <h3 className="font-bold text-foreground text-lg mb-2">{topThree[1]?.username}</h3>
-                <p className="text-base text-muted-foreground font-semibold mb-4">{topThree[1]?.totalScore.toLocaleString()} pts</p>
-                <div className="bg-gradient-to-t from-gray-500 to-gray-400 w-24 h-20 rounded-t-2xl mt-2 flex items-center justify-center shadow-xl shadow-gray-400/30 group-hover:shadow-gray-400/50 transition-shadow duration-300">
-                  <span className="text-white font-black text-2xl sparkle">🥈</span>
+                <h3 className="font-semibold text-foreground mb-1">{topThree[1]?.username}</h3>
+                <p className="text-sm text-muted-foreground mb-3">{topThree[1]?.totalScore.toLocaleString()} pts</p>
+                <div className="bg-gray-400 w-20 h-16 rounded-t-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">2</span>
                 </div>
               </div>
 
               {/* 1st Place */}
-              <div className="text-center group" data-testid="podium-first">
-                <div className="bg-gradient-to-br from-yellow-400/40 to-yellow-500/40 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-yellow-400/50 shadow-2xl shadow-yellow-400/30 group-hover:scale-110 transition-transform duration-300 pulse-glow">
-                  <span className="text-2xl font-black text-yellow-200">
+              <div className="text-center" data-testid="podium-first">
+                <div className="w-20 h-20 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-3 border-2 border-yellow-400">
+                  <span className="text-lg font-bold text-yellow-700">
                     {topThree[0]?.username.slice(0, 2).toUpperCase()}
                   </span>
                 </div>
-                <h3 className="font-bold text-foreground text-xl mb-2">{topThree[0]?.username}</h3>
-                <p className="text-lg text-muted-foreground font-semibold mb-4">{topThree[0]?.totalScore.toLocaleString()} pts</p>
-                <div className="bg-gradient-to-t from-yellow-500 to-yellow-400 w-24 h-28 rounded-t-2xl mt-2 flex items-center justify-center shadow-2xl shadow-yellow-400/40 group-hover:shadow-yellow-400/60 transition-shadow duration-300 enhanced-glow">
-                  <span className="text-white font-black text-3xl sparkle">🏆</span>
+                <h3 className="font-semibold text-foreground mb-1">{topThree[0]?.username}</h3>
+                <p className="text-sm text-muted-foreground mb-3">{topThree[0]?.totalScore.toLocaleString()} pts</p>
+                <div className="bg-yellow-500 w-20 h-20 rounded-t-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-xl">1</span>
                 </div>
               </div>
 
               {/* 3rd Place */}
-              <div className="text-center group" data-testid="podium-third">
-                <div className="bg-gradient-to-br from-orange-400/30 to-orange-500/30 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-orange-400/40 shadow-lg shadow-orange-400/20 group-hover:scale-110 transition-transform duration-300">
-                  <span className="text-2xl font-black text-orange-300">
+              <div className="text-center" data-testid="podium-third">
+                <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-3 border-2 border-orange-300">
+                  <span className="text-lg font-bold text-orange-600">
                     {topThree[2]?.username.slice(0, 2).toUpperCase()}
                   </span>
                 </div>
-                <h3 className="font-bold text-foreground text-lg mb-2">{topThree[2]?.username}</h3>
-                <p className="text-base text-muted-foreground font-semibold mb-4">{topThree[2]?.totalScore.toLocaleString()} pts</p>
-                <div className="bg-gradient-to-t from-orange-500 to-orange-400 w-24 h-16 rounded-t-2xl mt-2 flex items-center justify-center shadow-xl shadow-orange-400/30 group-hover:shadow-orange-400/50 transition-shadow duration-300">
-                  <span className="text-white font-black text-2xl sparkle">🥉</span>
+                <h3 className="font-semibold text-foreground mb-1">{topThree[2]?.username}</h3>
+                <p className="text-sm text-muted-foreground mb-3">{topThree[2]?.totalScore.toLocaleString()} pts</p>
+                <div className="bg-orange-500 w-20 h-12 rounded-t-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">3</span>
                 </div>
               </div>
             </div>
@@ -93,7 +84,7 @@ export default function Leaderboard() {
       )}
 
       {/* Full Leaderboard */}
-      <Card className="shadow-sm">
+      <Card className="card">
         <CardHeader>
           <CardTitle>Full Rankings</CardTitle>
         </CardHeader>
@@ -125,8 +116,8 @@ export default function Leaderboard() {
                   return (
                     <tr
                       key={player.id}
-                      className={`hover:bg-muted transition-colors ${
-                        isCurrentUser ? "bg-primary/5" : ""
+                      className={`table-row ${
+                        isCurrentUser ? "highlight" : ""
                       }`}
                       data-testid={`leaderboard-row-${player.rank}`}
                     >

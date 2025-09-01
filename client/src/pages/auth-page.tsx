@@ -128,36 +128,13 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center animated-bg relative overflow-hidden p-4">
-      {/* Animated background particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-primary/5 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-accent/5 blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-primary/3 blur-3xl animate-pulse delay-2000"></div>
-      </div>
-      
-      {/* Floating particles */}
-      <div className="absolute inset-0">
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-2 h-2 bg-primary/20 rounded-full float sparkle"
-            style={{
-              top: `${20 + i * 15}%`,
-              left: `${10 + i * 12}%`,
-              animationDelay: `${i * 0.5}s`,
-            }}
-          />
-        ))}
-      </div>
-      
-      <Card className="w-full max-w-md glass-morphism border-0 shadow-2xl relative z-10 slide-in neon-glow-hover">
-        <CardHeader className="text-center space-y-4 pb-6">
-          <CardTitle className="text-4xl font-bold gradient-text animate-gradient-x float">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md card">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className="text-3xl font-bold text-foreground">
             QuizMaster Pro
           </CardTitle>
-          <div className="h-1 w-24 bg-gradient-to-r from-primary to-accent rounded-full mx-auto pulse-glow"></div>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground">
             {isLogin ? "Welcome back! Sign in to continue." : "Create your account to get started."}
           </p>
         </CardHeader>
@@ -171,7 +148,7 @@ export default function AuthPage() {
                   type="text"
                   placeholder="Enter your username"
                   {...loginForm.register("username")}
-                  className="w-full input-modern focus-glow glass-shimmer relative"
+                  className="input-field"
                 />
                 {loginForm.formState.errors.username && (
                   <p className="text-sm text-destructive">
@@ -187,7 +164,7 @@ export default function AuthPage() {
                   type="password"
                   placeholder="Enter your password"
                   {...loginForm.register("password")}
-                  className="w-full input-modern focus-glow glass-shimmer relative"
+                  className="input-field"
                 />
                 {loginForm.formState.errors.password && (
                   <p className="text-sm text-destructive">
@@ -198,12 +175,10 @@ export default function AuthPage() {
               
               <Button
                 type="submit"
-                className="w-full btn-primary enhanced-glow relative overflow-hidden"
+                className="w-full btn-primary"
                 disabled={loginMutation.isPending}
               >
-                <span className="relative z-10">
-                  {loginMutation.isPending ? "Signing in..." : "Sign In"}
-                </span>
+                {loginMutation.isPending ? "Signing in..." : "Sign In"}
               </Button>
             </form>
           ) : (
@@ -215,7 +190,7 @@ export default function AuthPage() {
                   type="text"
                   placeholder="Choose a username"
                   {...registerForm.register("username")}
-                  className="w-full input-modern focus-glow glass-shimmer relative"
+                  className="input-field"
                 />
                 {registerForm.formState.errors.username && (
                   <p className="text-sm text-destructive">
@@ -231,7 +206,7 @@ export default function AuthPage() {
                   type="password"
                   placeholder="Create a password"
                   {...registerForm.register("password")}
-                  className="w-full input-modern focus-glow glass-shimmer relative"
+                  className="input-field"
                 />
                 {registerForm.formState.errors.password && (
                   <p className="text-sm text-destructive">
@@ -247,7 +222,7 @@ export default function AuthPage() {
                   type="password"
                   placeholder="Confirm your password"
                   {...registerForm.register("confirmPassword")}
-                  className="w-full input-modern focus-glow glass-shimmer relative"
+                  className="input-field"
                 />
                 {registerForm.formState.errors.confirmPassword && (
                   <p className="text-sm text-destructive">
@@ -258,12 +233,10 @@ export default function AuthPage() {
               
               <Button
                 type="submit"
-                className="w-full btn-primary enhanced-glow relative overflow-hidden"
+                className="w-full btn-primary"
                 disabled={registerMutation.isPending}
               >
-                <span className="relative z-10">
-                  {registerMutation.isPending ? "Creating account..." : "Create Account"}
-                </span>
+                {registerMutation.isPending ? "Creating account..." : "Create Account"}
               </Button>
             </form>
           )}
@@ -276,7 +249,7 @@ export default function AuthPage() {
                 loginForm.reset();
                 registerForm.reset();
               }}
-              className="text-primary hover:text-primary/80 glass-effect rounded-lg px-6 py-3 transition-all duration-300 hover:scale-105"
+              className="text-primary hover:bg-accent"
             >
               {isLogin 
                 ? "Don't have an account? Sign up" 

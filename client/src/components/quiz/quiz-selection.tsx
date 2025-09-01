@@ -116,92 +116,68 @@ export default function QuizSelection({ onQuizStart }: QuizSelectionProps) {
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 relative">
-      {/* Floating background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-primary/3 blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-accent/3 blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-primary/2 blur-3xl animate-pulse delay-2000"></div>
-      </div>
-      
-      <div className="text-center mb-12 relative z-10">
-        <h1 className="text-5xl font-black mb-6 gradient-text animate-gradient-x">
+    <div className="max-w-6xl mx-auto space-y-8">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-4">
           Challenge Your Brain
         </h1>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+        <p className="text-muted-foreground max-w-2xl mx-auto">
           Choose your field and test your knowledge with AI-generated questions
         </p>
-        <div className="mt-6 h-1 w-48 bg-gradient-to-r from-primary via-accent to-primary rounded-full mx-auto pulse-glow"></div>
       </div>
 
       {/* Mode Selection */}
-      <div className="flex justify-center space-x-6 mb-12 relative z-10">
+      <div className="flex justify-center space-x-4 mb-8">
         <Button
           variant={selectedMode === "daily" ? "default" : "outline"}
           onClick={() => setSelectedMode("daily")}
-          className={`px-10 py-4 text-lg font-bold rounded-2xl transition-all duration-300 hover:scale-105 relative overflow-hidden ${
-            selectedMode === "daily" 
-              ? "btn-primary enhanced-glow" 
-              : "glass-effect border-primary/30 hover:border-primary/50"
-          }`}
+          className={selectedMode === "daily" ? "btn-primary" : "btn-outline"}
         >
-          <span className="relative z-10 flex items-center">
-            <Calendar className="w-5 h-5 mr-3 sparkle" />
-            Daily Challenge
-          </span>
+          <Calendar className="w-4 h-4 mr-2" />
+          Daily Challenge
         </Button>
         <Button
           variant={selectedMode === "practice" ? "default" : "outline"}
           onClick={() => setSelectedMode("practice")}
-          className={`px-10 py-4 text-lg font-bold rounded-2xl transition-all duration-300 hover:scale-105 relative overflow-hidden ${
-            selectedMode === "practice" 
-              ? "btn-primary enhanced-glow" 
-              : "glass-effect border-accent/30 hover:border-accent/50"
-          }`}
+          className={selectedMode === "practice" ? "btn-primary" : "btn-outline"}
         >
-          <span className="relative z-10 flex items-center">
-            <Target className="w-5 h-5 mr-3 sparkle" />
-            Practice Mode
-          </span>
+          <Target className="w-4 h-4 mr-2" />
+          Practice Mode
         </Button>
       </div>
 
       {selectedMode && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {quizFields.map((field) => (
-            <Card key={field.id} className="glass-morphism border-0 group hover:scale-105 transition-all duration-500 cursor-pointer overflow-hidden enhanced-glow">
-              <div className={`h-3 bg-gradient-to-r ${field.color} opacity-80`} />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/3 via-transparent to-accent/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <CardHeader className="pb-6 relative z-10">
-                <div className="flex items-center space-x-4">
-                  <div className={`p-4 rounded-2xl bg-gradient-to-r ${field.color} bg-opacity-20 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                    <field.icon className="h-8 w-8 text-foreground sparkle" />
+            <Card key={field.id} className="card cursor-pointer">
+              <CardHeader className="pb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <field.icon className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl font-bold gradient-text">{field.name}</CardTitle>
+                    <CardTitle className="text-lg font-semibold text-foreground">{field.name}</CardTitle>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="pt-0 relative z-10">
-                <p className="text-muted-foreground text-base mb-6 leading-relaxed">
+              <CardContent className="pt-0">
+                <p className="text-muted-foreground text-sm mb-4">
                   {field.description}
                 </p>
                 <Button 
                   onClick={() => handleStartQuiz(field.id, 20, selectedMode === "daily")}
-                  className="w-full btn-primary enhanced-glow relative overflow-hidden py-4 text-base font-bold rounded-xl mb-4"
+                  className="w-full btn-primary mb-3"
                   disabled={selectedMode === "daily" && (dailyQuizStatus as any)?.[field.id]?.completed}
                 >
-                  <span className="relative z-10">
-                    {selectedMode === "daily" && (dailyQuizStatus as any)?.[field.id]?.completed 
-                      ? "✅ Completed Today" 
-                      : `🚀 Start ${selectedMode === "daily" ? "Daily" : "Practice"} Quiz`
-                    }
-                  </span>
+                  {selectedMode === "daily" && (dailyQuizStatus as any)?.[field.id]?.completed 
+                    ? "Completed Today" 
+                    : `Start ${selectedMode === "daily" ? "Daily" : "Practice"} Quiz`
+                  }
                 </Button>
                 {selectedMode === "daily" && (
-                  <div className="glass-effect p-3 rounded-xl border border-primary/20">
-                    <p className="text-sm text-muted-foreground text-center font-medium">
-                      ⏱️ 20 questions • 🏆 Counts toward leaderboard
+                  <div className="bg-muted/50 p-3 rounded-lg">
+                    <p className="text-xs text-muted-foreground text-center">
+                      20 questions • Counts toward leaderboard
                     </p>
                   </div>
                 )}
