@@ -221,8 +221,8 @@
 
   .btn-outline-modern {
     @apply relative px-8 py-4 rounded-2xl font-semibold text-primary;
-    @apply border-2 border-primary/30 bg-transparent;
-    @apply transition-all duration-300 hover:border-primary/50;
+    @apply border-2 border-primary border-opacity-30 bg-transparent;
+    @apply transition-all duration-300 hover:border-primary hover:border-opacity-50;
     @apply glass-morphism;
   }
 
