@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -68,7 +67,7 @@
     min-height: 100vh;
     line-height: 1.6;
     letter-spacing: -0.025em;
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--background)) 0%,
       hsl(220 15% 6%) 25%,
       hsl(266 20% 8%) 50%,
@@ -99,7 +98,7 @@
 @layer components {
   /* Modern Gradient Backgrounds */
   .gradient-bg-primary {
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary)) 0%,
       hsl(var(--accent)) 100%);
   }
@@ -111,7 +110,7 @@
   }
 
   .gradient-text {
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary)) 0%,
       hsl(var(--accent)) 50%,
       hsl(var(--primary)) 100%);
@@ -159,7 +158,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary)) 0%,
       hsl(var(--accent)) 100%);
     border-radius: 0.75rem;
@@ -191,7 +190,7 @@
   .btn-modern {
     @apply relative overflow-hidden rounded-2xl px-8 py-4 font-bold text-white;
     @apply transition-all duration-300 transform hover:scale-105;
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary)) 0%,
       hsl(var(--accent)) 100%);
     box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
@@ -208,7 +207,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
+    background: linear-gradient(90deg,
       transparent 0%,
       rgba(255, 255, 255, 0.2) 50%,
       transparent 100%);
@@ -246,7 +245,7 @@
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, 
+    background: linear-gradient(90deg,
       transparent 0%,
       hsl(var(--primary)) 50%,
       transparent 100%);
@@ -271,7 +270,7 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, 
+    background: linear-gradient(90deg,
       hsl(var(--primary)) 0%,
       hsl(var(--accent)) 100%);
     transform: scaleX(0);
@@ -338,7 +337,7 @@
 
   .progress-bar {
     @apply h-full rounded-full relative overflow-hidden;
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary)) 0%,
       hsl(var(--accent)) 100%);
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
@@ -351,7 +350,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
+    background: linear-gradient(90deg,
       transparent 0%,
       rgba(255, 255, 255, 0.3) 50%,
       transparent 100%);
@@ -383,7 +382,7 @@
 
   .mobile-nav-item.active {
     @apply text-white;
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary) / 0.3) 0%,
       hsl(var(--accent) / 0.3) 100%);
   }
@@ -404,7 +403,8 @@
   }
 
   .table-row.highlight {
-    @apply bg-primary/10 border-l-4 border-primary;
+    @apply border-l-4 border-primary;
+    background-color: rgba(139, 92, 246, 0.1);
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
   }
 
@@ -442,7 +442,7 @@
 
   .badge-primary {
     @apply badge-modern text-white border-primary/50;
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary) / 0.3) 0%,
       hsl(var(--accent) / 0.3) 100%);
   }
@@ -466,20 +466,20 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% { 
+    0%, 100% {
       box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
     }
-    50% { 
+    50% {
       box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
     }
   }
 
   @keyframes sparkle {
-    0%, 100% { 
+    0%, 100% {
       transform: scale(1) rotate(0deg);
       opacity: 1;
     }
-    50% { 
+    50% {
       transform: scale(1.2) rotate(180deg);
       opacity: 0.8;
     }
@@ -508,7 +508,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary)) 0%,
       hsl(var(--accent)) 100%);
     border-radius: 4px;
@@ -516,7 +516,7 @@
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, 
+    background: linear-gradient(135deg,
       hsl(var(--primary) / 0.8) 0%,
       hsl(var(--accent) / 0.8) 100%);
   }
@@ -564,10 +564,10 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 20% 80%, 
+    background: radial-gradient(circle at 20% 80%,
       rgba(139, 92, 246, 0.1) 0%,
       transparent 50%),
-    radial-gradient(circle at 80% 20%, 
+    radial-gradient(circle at 80% 20%,
       rgba(236, 72, 153, 0.1) 0%,
       transparent 50%);
     pointer-events: none;
@@ -612,11 +612,11 @@
   .mobile-optimized {
     @apply px-4 py-2 text-sm;
   }
-  
+
   .glass-card {
     @apply p-4;
   }
-  
+
   .modern-card {
     @apply p-6;
   }
