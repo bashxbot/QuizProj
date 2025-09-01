@@ -1,6 +1,6 @@
 # Overview
 
-A minimal static web server built with Python that serves HTML content. The project consists of a simple "Hello World" web page served by a custom Python HTTP server implementation. This is a basic web hosting setup suitable for serving static content during development or for simple web applications.
+This is a full-stack quiz application called "QuizMaster Pro" that allows users to take AI-generated quizzes on various topics. The application features user authentication, quiz generation using Google's Gemini AI, score tracking, and leaderboards. Built with React frontend and Express backend, it provides an engaging platform for knowledge testing and competition.
 
 # User Preferences
 
@@ -9,33 +9,73 @@ Preferred communication style: Simple, everyday language.
 # System Architecture
 
 ## Frontend Architecture
-- **Static HTML**: Single `index.html` file with basic structure
-- **No JavaScript Framework**: Pure HTML without client-side scripting or CSS
-- **Minimal Design**: Bare-bones HTML5 document structure
+- **React 18** with TypeScript for the UI layer
+- **Vite** as the build tool and dev server
+- **Wouter** for client-side routing instead of React Router
+- **TanStack Query** for server state management and caching
+- **shadcn/ui** component library built on Radix UI primitives
+- **Tailwind CSS** for styling with custom design tokens
+- **React Hook Form** with Zod validation for form handling
 
 ## Backend Architecture
-- **Python HTTP Server**: Custom implementation using Python's built-in `http.server` module
-- **Static File Serving**: Extends `SimpleHTTPRequestHandler` to serve files from the current working directory
-- **Single-threaded**: Uses `socketserver.TCPServer` for handling requests synchronously
-- **Port Configuration**: Hardcoded to run on port 5000 with host binding to all interfaces (0.0.0.0)
+- **Express.js** server with TypeScript
+- **Passport.js** with Local Strategy for session-based authentication
+- **Express Session** with PostgreSQL session store for persistent sessions
+- RESTful API endpoints for quiz operations, user management, and leaderboards
+- **Drizzle ORM** for database operations with type-safe schema definitions
+- Custom middleware for request logging and error handling
 
-## Server Design Decisions
-- **Built-in Modules**: Uses only Python standard library modules (`http.server`, `socketserver`, `os`)
-- **Development-focused**: Simple server suitable for local development and testing
-- **File System Based**: Serves any files present in the current directory without routing logic
-- **No Database**: Pure static file serving without data persistence
+## Database Design
+- **PostgreSQL** as the primary database using Neon serverless
+- **Drizzle ORM** for schema management and migrations
+- Three main tables:
+  - `users` - User accounts with authentication and statistics
+  - `quizzes` - Quiz definitions with questions stored as JSONB
+  - `quiz_attempts` - User quiz submissions and scoring history
+- Relational design with foreign key constraints
+
+## Authentication & Authorization
+- Session-based authentication using Passport.js Local Strategy
+- Password hashing with Node.js crypto (scrypt) and random salts
+- Protected routes requiring authentication middleware
+- Session storage in PostgreSQL for scalability
+- Trust proxy configuration for deployment environments
+
+## State Management
+- Server state managed by TanStack Query with automatic caching
+- Local component state using React hooks
+- Form state handled by React Hook Form with Zod schemas
+- Authentication state provided through React Context
+
+## AI Integration
+- **Google Gemini 2.5 Flash** for quiz generation
+- Structured prompts to generate consistent quiz formats
+- JSON schema validation for AI responses
+- Category-based quiz generation with configurable question counts
 
 # External Dependencies
 
-## Runtime Dependencies
-- **Python 3**: Requires Python 3.x runtime environment
-- **No Package Dependencies**: Uses only Python standard library modules
+## AI Services
+- **Google Generative AI** (@google/genai) - Quiz content generation using Gemini models
 
-## Infrastructure
-- **No External Services**: Self-contained server without external API integrations
-- **No Database**: No data storage or persistence layer
-- **Local File System**: Serves content directly from the local directory structure
+## Database & Storage
+- **Neon Database** (@neondatabase/serverless) - Serverless PostgreSQL hosting
+- **Drizzle ORM** (drizzle-orm) - Type-safe database operations and migrations
+- **connect-pg-simple** - PostgreSQL session store for Express sessions
 
-## Development Environment
-- **No Build Tools**: Direct execution without compilation or build processes
-- **No Package Manager**: No pip requirements or dependency management needed
+## Authentication
+- **Passport.js** (passport, passport-local) - Authentication middleware and strategies
+- **Express Session** (express-session) - Session management
+
+## Frontend Libraries
+- **Radix UI** - Comprehensive set of accessible UI primitives
+- **TanStack React Query** - Server state management and caching
+- **React Hook Form** - Form handling with validation
+- **Wouter** - Lightweight client-side routing
+- **Zod** - TypeScript-first schema validation
+
+## Development Tools
+- **Vite** - Fast build tool and development server
+- **TypeScript** - Type safety across the full stack
+- **Tailwind CSS** - Utility-first CSS framework
+- **ESBuild** - Fast JavaScript bundler for production builds
