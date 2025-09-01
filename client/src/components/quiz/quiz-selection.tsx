@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Brain, Play, Clock, Star, Zap, BookOpen, Globe, 
   Cpu, Atom, Palette, Music, Trophy, Rocket, Sparkles,
-  ChevronRight, Target, Award, Crown, Fire
+  ChevronRight, Target, Award, Crown, Flame
 } from "lucide-react";
 
 interface QuizSelectionProps {
@@ -89,7 +89,7 @@ export default function QuizSelection({ onStartQuiz, isLoading }: QuizSelectionP
       id: "hard", 
       name: "Hard", 
       description: "For experts only",
-      icon: Fire,
+      icon: Flame,
       gradient: "from-red-500 to-pink-600",
       time: "15-20 min"
     },

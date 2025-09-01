@@ -260,7 +260,7 @@
 
   /* Enhanced Stats Cards */
   .stat-card {
-    @apply modern-card relative group;
+    @apply modern-card relative;
   }
 
   .stat-card:after {
@@ -293,7 +293,7 @@
   .input-modern {
     @apply w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/20;
     @apply text-white placeholder:text-white/50 font-medium;
-    @apply focus:outline-none focus:border-primary/50 focus:bg-white/10;
+    @apply focus:outline-none focus:border-primary focus:bg-white/10;
     @apply transition-all duration-300;
     backdrop-filter: blur(10px);
   }
@@ -308,7 +308,7 @@
     @apply relative rounded-2xl p-6 cursor-pointer;
     @apply glass-morphism border border-white/20;
     @apply transition-all duration-300 transform;
-    @apply hover:scale-105 hover:border-primary/50;
+    @apply hover:scale-105 hover:border-primary;
   }
 
   .quiz-option:hover {
@@ -316,7 +316,7 @@
   }
 
   .quiz-option.selected {
-    @apply border-primary/80 bg-primary/20;
+    @apply border-primary bg-primary;
     box-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
   }
 
@@ -371,7 +371,7 @@
   /* Enhanced Mobile Navigation */
   .mobile-nav {
     @apply fixed bottom-0 left-0 right-0 z-50 glass-morphism;
-    @apply border-t border-white/20 backdrop-blur-25;
+    @apply border-t border-white/20 backdrop-blur-lg;
     background: rgba(0, 0, 0, 0.8);
   }
 
@@ -395,7 +395,7 @@
 
   .table-row {
     @apply border-b border-white/10 transition-all duration-300;
-    @apply hover:bg-white/5 hover:border-primary/30;
+    @apply hover:bg-white/5 hover:border-primary;
   }
 
   .table-row:hover {
@@ -441,7 +441,7 @@
   }
 
   .badge-primary {
-    @apply badge-modern text-white border-primary/50;
+    @apply badge-modern text-white border-primary;
     background: linear-gradient(135deg,
       hsl(var(--primary) / 0.3) 0%,
       hsl(var(--accent) / 0.3) 100%);

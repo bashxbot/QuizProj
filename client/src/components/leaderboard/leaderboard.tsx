@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Trophy, Medal, Award, Crown, Star, Target, TrendingUp, 
-  Users, Zap, Fire, Sparkles, ChevronUp, ChevronDown,
+  Users, Zap, Flame, Sparkles, ChevronUp, ChevronDown,
   Brain, Clock, BarChart3
 } from "lucide-react";
 
@@ -83,7 +83,7 @@ export default function Leaderboard() {
             { label: "Total Players", value: leaderboard?.length || 0, icon: Users, gradient: "from-blue-500 to-cyan-500" },
             { label: "Active Today", value: Math.floor((leaderboard?.length || 0) * 0.3), icon: Activity, gradient: "from-green-500 to-emerald-500" },
             { label: "Avg Score", value: `${Math.round(leaderboard?.reduce((acc, user) => acc + user.averageScore, 0) / (leaderboard?.length || 1) || 0)}%`, icon: Target, gradient: "from-purple-500 to-pink-500" },
-            { label: "Top Score", value: `${Math.max(...(leaderboard?.map(u => u.averageScore) || [0]))}%`, icon: Fire, gradient: "from-orange-500 to-red-500" }
+            { label: "Top Score", value: `${Math.max(...(leaderboard?.map(u => u.averageScore) || [0]))}%`, icon: Flame, gradient: "from-orange-500 to-red-500" }
           ].map((stat, index) => {
             const Icon = stat.icon;
             return (
@@ -206,7 +206,7 @@ export default function Leaderboard() {
             <button className="btn-modern group">
               <Play className="h-5 w-5 mr-3 group-hover:animate-bounce" />
               Start New Quiz
-              <Fire className="h-5 w-5 ml-3 group-hover:animate-pulse" />
+              <Flame className="h-5 w-5 ml-3 group-hover:animate-pulse" />
             </button>
           </div>
         </div>

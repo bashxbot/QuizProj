@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { 
   Brain, Clock, Trophy, Target, TrendingUp, Play, Star, 
   Award, Zap, Crown, Sparkles, ChevronRight, BarChart3,
-  Calendar, Users, Fire, Rocket, Medal, BookOpen, Activity
+  Calendar, Users, Flame, Rocket, Medal, BookOpen, Activity
 } from "lucide-react";
 import type { Section } from "@/pages/home-page";
 
@@ -43,7 +43,7 @@ export default function Dashboard({ onSectionChange }: DashboardProps) {
     {
       label: "Best Streak",
       value: profile?.bestStreak || 0,
-      icon: Fire,
+      icon: Flame,
       gradient: "from-orange-500 to-red-600",
       change: "+2",
       changeType: "positive"
