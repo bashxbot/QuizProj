@@ -42,6 +42,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      toast({
+        title: "Welcome back!",
+        description: `Logged in successfully as ${user.username}`,
+      });
+      setLocation("/");
     },
     onError: (error: Error) => {
       toast({
@@ -59,6 +64,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: SelectUser) => {
       queryClient.setQueryData(["/api/user"], user);
+      toast({
+        title: "Account created!",
+        description: `Welcome to QuizMaster, ${user.username}!`,
+      });
+      setLocation("/");
     },
     onError: (error: Error) => {
       toast({
