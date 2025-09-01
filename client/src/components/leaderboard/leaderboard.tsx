@@ -1,191 +1,216 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/hooks/use-auth";
-import { Trophy, Medal, Award } from "lucide-react";
-import type { LeaderboardEntry } from "@shared/schema";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Trophy, Medal, Award, Crown, Star, Target, TrendingUp, 
+  Users, Zap, Fire, Sparkles, ChevronUp, ChevronDown,
+  Brain, Clock, BarChart3
+} from "lucide-react";
+
+interface LeaderboardEntry {
+  rank: number;
+  username: string;
+  totalQuizzes: number;
+  averageScore: number;
+  totalPoints: number;
+}
 
 export default function Leaderboard() {
-  const { user } = useAuth();
-  
   const { data: leaderboard, isLoading } = useQuery<LeaderboardEntry[]>({
     queryKey: ["/api/leaderboard"],
   });
 
+  const getRankIcon = (rank: number) => {
+    switch (rank) {
+      case 1: return { icon: Crown, gradient: "from-yellow-400 to-orange-500", glow: "shadow-yellow-500/50" };
+      case 2: return { icon: Medal, gradient: "from-gray-400 to-gray-600", glow: "shadow-gray-500/50" };
+      case 3: return { icon: Award, gradient: "from-amber-600 to-yellow-700", glow: "shadow-amber-500/50" };
+      default: return { icon: Star, gradient: "from-purple-500 to-pink-600", glow: "shadow-purple-500/30" };
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 90) return "text-green-400";
+    if (score >= 70) return "text-yellow-400";
+    if (score >= 50) return "text-orange-400";
+    return "text-red-400";
+  };
+
+  const getScoreBadge = (score: number) => {
+    if (score >= 90) return "badge-success";
+    if (score >= 70) return "badge-warning";
+    return "badge-error";
+  };
+
   if (isLoading) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-8 bg-muted rounded w-1/3"></div>
-        <div className="h-32 bg-muted rounded-lg"></div>
-        <div className="h-96 bg-muted rounded-lg"></div>
+      <div className="page-container">
+        <div className="content-wrapper">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="spinner mx-auto mb-4"></div>
+              <p className="text-white/70">Loading leaderboard...</p>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  const topThree = leaderboard?.slice(0, 3) || [];
-  const restOfLeaderboard = leaderboard?.slice(3) || [];
-  const userEntry = leaderboard?.find(entry => entry.username === user?.username);
-
   return (
-    <div className="space-y-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Leaderboard</h1>
-        <p className="text-muted-foreground">See how you stack up against other quiz masters</p>
-      </div>
-
-      {/* Top 3 Podium */}
-      {topThree.length >= 3 && (
-        <Card className="card">
-          <CardContent className="p-8">
-            <div className="flex justify-center items-end space-x-8">
-              {/* 2nd Place */}
-              <div className="text-center" data-testid="podium-second">
-                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3 border-2 border-gray-300">
-                  <span className="text-lg font-bold text-gray-600">
-                    {topThree[1]?.username.slice(0, 2).toUpperCase()}
-                  </span>
-                </div>
-                <h3 className="font-semibold text-foreground mb-1">{topThree[1]?.username}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{topThree[1]?.totalScore.toLocaleString()} pts</p>
-                <div className="bg-gray-400 w-20 h-16 rounded-t-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">2</span>
-                </div>
-              </div>
-
-              {/* 1st Place */}
-              <div className="text-center" data-testid="podium-first">
-                <div className="w-20 h-20 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-3 border-2 border-yellow-400">
-                  <span className="text-lg font-bold text-yellow-700">
-                    {topThree[0]?.username.slice(0, 2).toUpperCase()}
-                  </span>
-                </div>
-                <h3 className="font-semibold text-foreground mb-1">{topThree[0]?.username}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{topThree[0]?.totalScore.toLocaleString()} pts</p>
-                <div className="bg-yellow-500 w-20 h-20 rounded-t-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">1</span>
-                </div>
-              </div>
-
-              {/* 3rd Place */}
-              <div className="text-center" data-testid="podium-third">
-                <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mx-auto mb-3 border-2 border-orange-300">
-                  <span className="text-lg font-bold text-orange-600">
-                    {topThree[2]?.username.slice(0, 2).toUpperCase()}
-                  </span>
-                </div>
-                <h3 className="font-semibold text-foreground mb-1">{topThree[2]?.username}</h3>
-                <p className="text-sm text-muted-foreground mb-3">{topThree[2]?.totalScore.toLocaleString()} pts</p>
-                <div className="bg-orange-500 w-20 h-12 rounded-t-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">3</span>
-                </div>
-              </div>
+    <div className="page-container">
+      <div className="content-wrapper">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <div className="relative inline-block mb-8">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center shadow-2xl shadow-yellow-500/25 animate-pulse-glow mx-auto">
+              <Trophy className="h-12 w-12 text-white" />
             </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Full Leaderboard */}
-      <Card className="card">
-        <CardHeader>
-          <CardTitle>Full Rankings</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Rank
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Player
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Score
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Quizzes
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                    Avg %
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-card divide-y divide-border">
-                {leaderboard?.map((player) => {
-                  const isCurrentUser = player.username === user?.username;
-                  return (
-                    <tr
-                      key={player.id}
-                      className={`table-row ${
-                        isCurrentUser ? "highlight" : ""
-                      }`}
-                      data-testid={`leaderboard-row-${player.rank}`}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg font-bold leaderboard-rank">
-                            {player.rank}
-                          </span>
-                          {player.rank <= 3 && (
-                            <div className="text-accent">
-                              {player.rank === 1 && <Trophy className="h-4 w-4" />}
-                              {player.rank === 2 && <Medal className="h-4 w-4" />}
-                              {player.rank === 3 && <Award className="h-4 w-4" />}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="bg-primary/10 w-8 h-8 rounded-full flex items-center justify-center mr-3">
-                            <span className="text-sm font-medium text-primary">
-                              {player.username.slice(0, 2).toUpperCase()}
-                            </span>
-                          </div>
-                          <span className="font-medium text-foreground">
-                            {player.username}
-                            {isCurrentUser && (
-                              <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full ml-2">
-                                You
-                              </span>
-                            )}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
-                        {player.totalScore.toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                        {player.quizzesTaken}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                        {player.averageScore}%
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+            <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center animate-bounce">
+              <Sparkles className="h-6 w-6 text-white" />
+            </div>
           </div>
-        </CardContent>
-      </Card>
+          <h1 className="heading-modern mb-6">Global Leaderboard</h1>
+          <p className="subheading-modern max-w-2xl mx-auto">
+            Compete with quiz masters from around the world and climb the ranks!
+          </p>
+        </div>
 
-      {/* User Position Highlight */}
-      {userEntry && userEntry.rank > 10 && (
-        <Card className="shadow-sm border-primary/20">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg font-bold text-primary">#{userEntry.rank}</span>
-                <span className="font-medium text-foreground">Your Position</span>
+        {/* Stats Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+          {[
+            { label: "Total Players", value: leaderboard?.length || 0, icon: Users, gradient: "from-blue-500 to-cyan-500" },
+            { label: "Active Today", value: Math.floor((leaderboard?.length || 0) * 0.3), icon: Activity, gradient: "from-green-500 to-emerald-500" },
+            { label: "Avg Score", value: `${Math.round(leaderboard?.reduce((acc, user) => acc + user.averageScore, 0) / (leaderboard?.length || 1) || 0)}%`, icon: Target, gradient: "from-purple-500 to-pink-500" },
+            { label: "Top Score", value: `${Math.max(...(leaderboard?.map(u => u.averageScore) || [0]))}%`, icon: Fire, gradient: "from-orange-500 to-red-500" }
+          ].map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div key={index} className="stat-card">
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-xl mb-4 group-hover:animate-float`}>
+                  <Icon className="h-7 w-7 text-white" />
+                </div>
+                <div className="stat-value mb-2">{stat.value}</div>
+                <div className="stat-label">{stat.label}</div>
               </div>
-              <span className="text-sm text-muted-foreground">
-                {userEntry.totalScore.toLocaleString()} points
-              </span>
+            );
+          })}
+        </div>
+
+        {/* Leaderboard */}
+        <div className="modern-card">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-black gradient-text flex items-center">
+              <BarChart3 className="mr-4 h-8 w-8 text-primary" />
+              Top Performers
+            </h2>
+            <Badge className="badge-primary flex items-center">
+              <Users className="h-4 w-4 mr-2" />
+              {leaderboard?.length || 0} Players
+            </Badge>
+          </div>
+
+          {leaderboard && leaderboard.length > 0 ? (
+            <div className="space-y-4">
+              {leaderboard.map((user, index) => {
+                const rankInfo = getRankIcon(user.rank);
+                const Icon = rankInfo.icon;
+                
+                return (
+                  <div
+                    key={index}
+                    className={`glass-morphism p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all duration-300 group ${
+                      user.rank <= 3 ? 'border-primary/40 bg-primary/5' : ''
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      {/* Rank and User Info */}
+                      <div className="flex items-center space-x-6">
+                        <div className={`relative w-16 h-16 rounded-2xl bg-gradient-to-br ${rankInfo.gradient} flex items-center justify-center shadow-xl ${rankInfo.glow} group-hover:animate-float`}>
+                          <Icon className="h-8 w-8 text-white" />
+                          <div className="absolute -top-1 -right-1 w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                            <span className="text-xs font-bold text-white">#{user.rank}</span>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h3 className="text-xl font-bold text-white mb-1 flex items-center">
+                            {user.username}
+                            {user.rank === 1 && <Crown className="h-5 w-5 ml-2 text-yellow-400 animate-bounce" />}
+                            {user.rank <= 3 && <Sparkles className="h-4 w-4 ml-2 text-primary animate-sparkle" />}
+                          </h3>
+                          <p className="text-white/60 text-sm flex items-center">
+                            <Brain className="h-4 w-4 mr-2" />
+                            {user.totalQuizzes} quizzes completed
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="flex items-center space-x-8">
+                        {/* Average Score */}
+                        <div className="text-center">
+                          <div className={`text-2xl font-bold ${getScoreColor(user.averageScore)}`}>
+                            {Math.round(user.averageScore)}%
+                          </div>
+                          <p className="text-white/50 text-xs uppercase tracking-wide">Avg Score</p>
+                        </div>
+
+                        {/* Total Points */}
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-primary">
+                            {user.totalPoints.toLocaleString()}
+                          </div>
+                          <p className="text-white/50 text-xs uppercase tracking-wide">Points</p>
+                        </div>
+
+                        {/* Performance Badge */}
+                        <Badge className={getScoreBadge(user.averageScore)}>
+                          {user.averageScore >= 90 ? 'Expert' : 
+                           user.averageScore >= 70 ? 'Advanced' : 'Learning'}
+                        </Badge>
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="mt-4 progress-container">
+                      <div 
+                        className="progress-bar" 
+                        style={{ width: `${user.averageScore}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div className="text-center py-16">
+              <Trophy className="h-20 w-20 text-white/20 mx-auto mb-6" />
+              <h3 className="text-2xl font-bold text-white/60 mb-4">No rankings yet</h3>
+              <p className="text-white/40">Be the first to complete a quiz and claim the top spot!</p>
+            </div>
+          )}
+        </div>
+
+        {/* Call to Action */}
+        <div className="text-center mt-16">
+          <div className="modern-card max-w-2xl mx-auto">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-xl mx-auto mb-6 animate-float">
+              <Rocket className="h-8 w-8 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold gradient-text mb-4">Ready to Climb the Ranks?</h3>
+            <p className="text-white/70 mb-6">
+              Take more quizzes to improve your score and move up the leaderboard!
+            </p>
+            <button className="btn-modern group">
+              <Play className="h-5 w-5 mr-3 group-hover:animate-bounce" />
+              Start New Quiz
+              <Fire className="h-5 w-5 ml-3 group-hover:animate-pulse" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

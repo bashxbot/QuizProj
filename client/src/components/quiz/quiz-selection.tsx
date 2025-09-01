@@ -1,199 +1,255 @@
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
-import { useQuizState } from "@/hooks/use-quiz-state";
-import { Globe, FlaskConical, Landmark, BookOpen, Calendar, Target } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Brain, Play, Clock, Star, Zap, BookOpen, Globe, 
+  Cpu, Atom, Palette, Music, Trophy, Rocket, Sparkles,
+  ChevronRight, Target, Award, Crown, Fire
+} from "lucide-react";
 
 interface QuizSelectionProps {
-  onQuizStart: (quiz: any) => void;
+  onStartQuiz: (topic: string, difficulty: string) => void;
+  isLoading: boolean;
 }
 
-export default function QuizSelection({ onQuizStart }: QuizSelectionProps) {
-  const { toast } = useToast();
-  const { setCurrentQuiz, setIsQuizActive } = useQuizState();
-  const [selectedMode, setSelectedMode] = useState<"daily" | "practice" | null>(null);
+export default function QuizSelection({ onStartQuiz, isLoading }: QuizSelectionProps) {
+  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("");
 
-  const { data: dailyQuizStatus } = useQuery({
-    queryKey: ["/api/daily-quiz-status"],
-  });
-
-  const isDailyQuizCompleted = (field: string) => {
-    return dailyQuizStatus && (dailyQuizStatus as any)[field] === true;
-  };
-
-  const generateQuizMutation = useMutation({
-    mutationFn: async ({ field, questionCount, isDailyQuiz }: { field: string; questionCount: number; isDailyQuiz: boolean }) => {
-      const res = await apiRequest("POST", "/api/quiz/generate", { field, questionCount, isDailyQuiz });
-      return await res.json();
+  const topics = [
+    { 
+      id: "javascript", 
+      name: "JavaScript", 
+      icon: Cpu, 
+      description: "Modern web development",
+      gradient: "from-yellow-400 to-orange-500",
+      popularity: 95
     },
-    onSuccess: (quiz) => {
-      setCurrentQuiz(quiz);
-      setIsQuizActive(true);
-      onQuizStart(quiz);
+    { 
+      id: "python", 
+      name: "Python", 
+      icon: Brain, 
+      description: "Data science & AI",
+      gradient: "from-blue-500 to-cyan-500",
+      popularity: 92
     },
-    onError: (error) => {
-      toast({
-        title: "Failed to generate quiz",
-        description: error.message,
-        variant: "destructive",
-      });
+    { 
+      id: "react", 
+      name: "React", 
+      icon: Atom, 
+      description: "Frontend frameworks",
+      gradient: "from-cyan-400 to-blue-500",
+      popularity: 88
     },
-  });
-
-  const handleStartQuiz = (field: string, questionCount: number = 20, isDailyQuiz: boolean = false) => {
-    if (isDailyQuiz && isDailyQuizCompleted(field)) {
-      toast({
-        title: "Daily Challenge Already Completed",
-        description: "You can only take the daily challenge once per day. Try again tomorrow!",
-        variant: "destructive",
-      });
-      return;
-    }
-    generateQuizMutation.mutate({ field, questionCount, isDailyQuiz });
-  };
-
-  const quizFields = [
-    {
-      id: "web-development",
-      name: "Web Development",
-      description: "HTML, CSS, JavaScript, React, Node.js",
-      icon: Globe,
-      color: "from-blue-500 to-cyan-500",
+    { 
+      id: "nodejs", 
+      name: "Node.js", 
+      icon: Globe, 
+      description: "Backend development",
+      gradient: "from-green-500 to-emerald-600",
+      popularity: 85
     },
-    {
-      id: "data-science",
-      name: "Data Science",
-      description: "Python, Machine Learning, Statistics",
-      icon: FlaskConical,
-      color: "from-purple-500 to-pink-500",
+    { 
+      id: "css", 
+      name: "CSS", 
+      icon: Palette, 
+      description: "Styling & design",
+      gradient: "from-purple-500 to-pink-600",
+      popularity: 78
     },
-    {
-      id: "system-design",
-      name: "System Design",
-      description: "Architecture, Scalability, Databases",
-      icon: Landmark,
-      color: "from-green-500 to-emerald-500",
-    },
-    {
-      id: "algorithms",
-      name: "Algorithms & DS",
-      description: "Data Structures, Problem Solving",
-      icon: BookOpen,
-      color: "from-orange-500 to-red-500",
-    },
-    {
-      id: "android-development",
-      name: "Android Development",
-      description: "Java, Kotlin, Android SDK",
-      icon: Target,
-      color: "from-indigo-500 to-blue-500",
-    },
-    {
-      id: "ethical-hacking",
-      name: "Ethical Hacking",
-      description: "Security, Penetration Testing",
-      icon: FlaskConical,
-      color: "from-red-500 to-pink-500",
+    { 
+      id: "algorithms", 
+      name: "Algorithms", 
+      icon: Target, 
+      description: "Problem solving",
+      gradient: "from-red-500 to-rose-600",
+      popularity: 82
     },
   ];
 
-  if (generateQuizMutation.isPending) {
-    return (
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold mb-2">Generating Your Quiz</h2>
-          <p className="text-muted-foreground">
-            Our AI is crafting personalized questions just for you...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const difficulties = [
+    { 
+      id: "easy", 
+      name: "Easy", 
+      description: "Perfect for beginners",
+      icon: Star,
+      gradient: "from-green-400 to-emerald-500",
+      time: "5-10 min"
+    },
+    { 
+      id: "medium", 
+      name: "Medium", 
+      description: "Good challenge level",
+      icon: Zap,
+      gradient: "from-yellow-400 to-orange-500",
+      time: "10-15 min"
+    },
+    { 
+      id: "hard", 
+      name: "Hard", 
+      description: "For experts only",
+      icon: Fire,
+      gradient: "from-red-500 to-pink-600",
+      time: "15-20 min"
+    },
+  ];
+
+  const handleStartQuiz = () => {
+    if (selectedTopic && selectedDifficulty) {
+      onStartQuiz(selectedTopic, selectedDifficulty);
+    }
+  };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-4">
-          Challenge Your Brain
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Choose your field and test your knowledge with AI-generated questions
-        </p>
-      </div>
-
-      {/* Mode Selection */}
-      <div className="flex justify-center space-x-4 mb-8">
-        <Button
-          variant={selectedMode === "daily" ? "default" : "outline"}
-          onClick={() => setSelectedMode("daily")}
-          className={selectedMode === "daily" ? "btn-primary" : "btn-outline"}
-        >
-          <Calendar className="w-4 h-4 mr-2" />
-          Daily Challenge
-        </Button>
-        <Button
-          variant={selectedMode === "practice" ? "default" : "outline"}
-          onClick={() => setSelectedMode("practice")}
-          className={selectedMode === "practice" ? "btn-primary" : "btn-outline"}
-        >
-          <Target className="w-4 h-4 mr-2" />
-          Practice Mode
-        </Button>
-      </div>
-
-      {selectedMode && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {quizFields.map((field) => (
-            <Card key={field.id} className="card cursor-pointer">
-              <CardHeader className="pb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <field.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg font-semibold text-foreground">{field.name}</CardTitle>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground text-sm mb-4">
-                  {field.description}
-                </p>
-                <Button 
-                  onClick={() => handleStartQuiz(field.id, 20, selectedMode === "daily")}
-                  className="w-full btn-primary mb-3"
-                  disabled={selectedMode === "daily" && (dailyQuizStatus as any)?.[field.id]?.completed}
-                >
-                  {selectedMode === "daily" && (dailyQuizStatus as any)?.[field.id]?.completed 
-                    ? "Completed Today" 
-                    : `Start ${selectedMode === "daily" ? "Daily" : "Practice"} Quiz`
-                  }
-                </Button>
-                {selectedMode === "daily" && (
-                  <div className="bg-muted/50 p-3 rounded-lg">
-                    <p className="text-xs text-muted-foreground text-center">
-                      20 questions • Counts toward leaderboard
-                    </p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
-      {!selectedMode && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">
-            Select a mode above to see available quiz fields
+    <div className="page-container">
+      <div className="content-wrapper">
+        {/* Hero Section */}
+        <div className="text-center mb-16">
+          <div className="relative inline-block mb-8">
+            <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-purple-500/25 animate-pulse-glow mx-auto">
+              <Brain className="h-12 w-12 text-white" />
+            </div>
+            <div className="absolute -top-2 -right-2 w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center animate-bounce">
+              <Crown className="h-6 w-6 text-white" />
+            </div>
+          </div>
+          <h1 className="heading-modern mb-6">Choose Your Challenge</h1>
+          <p className="subheading-modern max-w-2xl mx-auto">
+            Select a topic and difficulty level to start your AI-powered quiz adventure!
           </p>
         </div>
-      )}
+
+        {/* Topic Selection */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-black gradient-text mb-2 flex items-center justify-center">
+            <BookOpen className="mr-3 h-8 w-8 text-primary" />
+            Select Topic
+          </h2>
+          <p className="text-center text-white/70 mb-8">Choose what you'd like to be tested on</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {topics.map((topic) => {
+              const Icon = topic.icon;
+              const isSelected = selectedTopic === topic.id;
+              
+              return (
+                <button
+                  key={topic.id}
+                  onClick={() => setSelectedTopic(topic.id)}
+                  className={`modern-card text-left group relative overflow-hidden ${
+                    isSelected ? 'border-primary/60 bg-primary/10' : 'hover:border-primary/40'
+                  }`}
+                >
+                  {/* Popularity Badge */}
+                  <div className="absolute top-4 right-4">
+                    <Badge className="badge-primary">
+                      {topic.popularity}% popular
+                    </Badge>
+                  </div>
+
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${topic.gradient} flex items-center justify-center mb-6 shadow-xl group-hover:animate-float`}>
+                    <Icon className="h-8 w-8 text-white" />
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold text-white mb-3">{topic.name}</h3>
+                  <p className="text-white/70 mb-4">{topic.description}</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-primary">
+                      <Trophy className="h-4 w-4 mr-2" />
+                      <span className="text-sm font-semibold">Popular Choice</span>
+                    </div>
+                    <ChevronRight className={`h-6 w-6 transition-transform duration-300 ${
+                      isSelected ? 'text-primary translate-x-2' : 'text-white/50 group-hover:translate-x-2'
+                    }`} />
+                  </div>
+
+                  {isSelected && (
+                    <div className="absolute top-4 left-4 w-6 h-6 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center animate-bounce">
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Difficulty Selection */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-black gradient-text mb-2 flex items-center justify-center">
+            <Target className="mr-3 h-8 w-8 text-accent" />
+            Select Difficulty
+          </h2>
+          <p className="text-center text-white/70 mb-8">How challenging do you want your quiz to be?</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {difficulties.map((difficulty) => {
+              const Icon = difficulty.icon;
+              const isSelected = selectedDifficulty === difficulty.id;
+              
+              return (
+                <button
+                  key={difficulty.id}
+                  onClick={() => setSelectedDifficulty(difficulty.id)}
+                  className={`modern-card text-center group relative ${
+                    isSelected ? 'border-accent/60 bg-accent/10' : 'hover:border-accent/40'
+                  }`}
+                >
+                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${difficulty.gradient} flex items-center justify-center mb-6 shadow-xl group-hover:animate-float mx-auto`}>
+                    <Icon className="h-10 w-10 text-white" />
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold text-white mb-3">{difficulty.name}</h3>
+                  <p className="text-white/70 mb-4">{difficulty.description}</p>
+                  
+                  <div className="flex items-center justify-center space-x-2 text-white/60">
+                    <Clock className="h-4 w-4" />
+                    <span className="text-sm font-medium">{difficulty.time}</span>
+                  </div>
+
+                  {isSelected && (
+                    <div className="absolute top-4 right-4 w-8 h-8 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center animate-bounce">
+                      <div className="w-3 h-3 bg-white rounded-full"></div>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Start Quiz Button */}
+        <div className="text-center">
+          <button
+            onClick={handleStartQuiz}
+            disabled={!selectedTopic || !selectedDifficulty || isLoading}
+            className={`btn-modern text-xl px-12 py-6 group ${
+              !selectedTopic || !selectedDifficulty ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+          >
+            {isLoading ? (
+              <div className="flex items-center">
+                <div className="spinner mr-3"></div>
+                Generating Quiz...
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <Rocket className="h-6 w-6 mr-3 group-hover:animate-bounce" />
+                Start Quiz Adventure
+                <Sparkles className="h-6 w-6 ml-3 animate-sparkle" />
+              </div>
+            )}
+          </button>
+          
+          {(!selectedTopic || !selectedDifficulty) && (
+            <p className="text-white/50 text-sm mt-4">
+              Please select both a topic and difficulty level to continue
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
