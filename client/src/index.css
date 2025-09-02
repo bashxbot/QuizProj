@@ -72,10 +72,16 @@ body {
 
 .glass-card {
   @apply glass-morphism rounded-3xl p-8 transition-all duration-500;
-  @apply hover:shadow-2xl hover:shadow-primary/20 hover:scale-[1.02];
+  @apply hover:shadow-2xl hover:scale-[1.02];
   background: linear-gradient(135deg, 
     rgba(255, 255, 255, 0.1) 0%, 
     rgba(255, 255, 255, 0.05) 100%);
+  transition: all 0.5s ease;
+}
+
+.glass-card:hover {
+  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.25),
+              0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .glass-button {
@@ -314,9 +320,14 @@ body {
 
 /* Revolutionary Card System */
 .modern-card {
-  @apply glass-card hover:shadow-2xl hover:shadow-primary/10;
+  @apply glass-card;
   position: relative;
   overflow: hidden;
+}
+
+.modern-card:hover {
+  box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.15),
+              0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .modern-card::before {
