@@ -1,12 +1,10 @@
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
 import { 
-  Brain, Clock, Trophy, Target, TrendingUp, Play, Star, 
-  Award, Zap, Crown, Sparkles, ChevronRight, BarChart3,
-  Calendar, Users, Flame, Rocket, Medal, BookOpen, Activity
+  Trophy, Play, BarChart3, Target, Zap, Star, Crown, 
+  TrendingUp, Calendar, Clock, Award, Sparkles, Flame,
+  Brain, Users, Globe, Rocket, ChevronRight, Plus
 } from "lucide-react";
 import type { Section } from "@/pages/home-page";
 
@@ -15,274 +13,363 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ onSectionChange }: DashboardProps) {
-  const { data: profile } = useQuery({
-    queryKey: ["/api/profile"],
-  }) as { data: any };
-
-  const { data: recentQuizzes } = useQuery({
-    queryKey: ["/api/quiz-history"],
-  }) as { data: any[] };
+  const { user } = useAuth();
 
   const stats = [
-    {
-      label: "Total Quizzes",
-      value: profile?.totalQuizzes || 0,
-      icon: Brain,
-      gradient: "from-purple-500 to-violet-600",
-      change: "+12%",
-      changeType: "positive"
+    { 
+      title: "Quizzes Completed", 
+      value: "42", 
+      change: "+12%", 
+      icon: Play, 
+      gradient: "from-blue-500 to-cyan-500",
+      trend: "up"
     },
-    {
-      label: "Average Score",
-      value: `${Math.round(profile?.averageScore || 0)}%`,
-      icon: Target,
-      gradient: "from-emerald-500 to-teal-600",
-      change: "+5%",
-      changeType: "positive"
+    { 
+      title: "Current Streak", 
+      value: "7 days", 
+      change: "🔥", 
+      icon: Flame, 
+      gradient: "from-orange-500 to-red-500",
+      trend: "up"
     },
-    {
-      label: "Best Streak",
-      value: profile?.bestStreak || 0,
-      icon: Flame,
-      gradient: "from-orange-500 to-red-600",
-      change: "+2",
-      changeType: "positive"
+    { 
+      title: "Global Rank", 
+      value: "#234", 
+      change: "+45", 
+      icon: Trophy, 
+      gradient: "from-yellow-500 to-orange-600",
+      trend: "up"
     },
-    {
-      label: "Rank Position",
-      value: `#${profile?.rank || 'N/A'}`,
-      icon: Crown,
-      gradient: "from-yellow-500 to-amber-600",
-      change: "↑3",
-      changeType: "positive"
+    { 
+      title: "Total Score", 
+      value: "8,547", 
+      change: "+892", 
+      icon: Star, 
+      gradient: "from-purple-500 to-pink-500",
+      trend: "up"
+    }
+  ];
+
+  const recentQuizzes = [
+    { 
+      title: "Advanced JavaScript Concepts", 
+      score: 85, 
+      date: "2 hours ago", 
+      difficulty: "Expert",
+      category: "Programming",
+      badge: "New Record!"
     },
+    { 
+      title: "World History: Modern Era", 
+      score: 92, 
+      date: "1 day ago", 
+      difficulty: "Hard",
+      category: "History",
+      badge: "Perfect!"
+    },
+    { 
+      title: "Basic Physics Principles", 
+      score: 78, 
+      date: "2 days ago", 
+      difficulty: "Medium",
+      category: "Science",
+      badge: null
+    }
   ];
 
   const achievements = [
-    { name: "First Quiz", description: "Completed your first quiz", icon: Star, unlocked: true, gradient: "from-blue-500 to-cyan-500" },
-    { name: "Perfect Score", description: "Got 100% on a quiz", icon: Trophy, unlocked: true, gradient: "from-yellow-500 to-orange-500" },
-    { name: "Quiz Master", description: "Completed 10 quizzes", icon: Crown, unlocked: false, gradient: "from-purple-500 to-pink-500" },
-    { name: "Speed Runner", description: "Completed a quiz in under 1 minute", icon: Zap, unlocked: false, gradient: "from-green-500 to-emerald-500" },
+    { 
+      title: "Quiz Master", 
+      description: "Complete 50 quizzes", 
+      progress: 84, 
+      icon: Crown,
+      unlocked: false
+    },
+    { 
+      title: "Speed Demon", 
+      description: "Answer 10 questions in under 30 seconds", 
+      progress: 100, 
+      icon: Zap,
+      unlocked: true
+    },
+    { 
+      title: "Knowledge Seeker", 
+      description: "Try quizzes in 10 different categories", 
+      progress: 70, 
+      icon: Brain,
+      unlocked: false
+    }
+  ];
+
+  const quickActions = [
+    {
+      title: "Start Quick Quiz",
+      description: "Random 10-question challenge",
+      icon: Rocket,
+      gradient: "from-purple-500 to-pink-500",
+      action: () => onSectionChange("quiz")
+    },
+    {
+      title: "View Leaderboard",
+      description: "See global rankings",
+      icon: Trophy,
+      gradient: "from-yellow-500 to-orange-500",
+      action: () => onSectionChange("leaderboard")
+    },
+    {
+      title: "Update Profile",
+      description: "Customize your experience",
+      icon: Users,
+      gradient: "from-green-500 to-emerald-500",
+      action: () => onSectionChange("profile")
+    }
   ];
 
   return (
-    <div className="page-container">
-      <div className="content-wrapper">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="heading-modern mb-6">
-            Welcome back, <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">{profile?.username}</span>!
-          </h1>
-          <p className="subheading-modern max-w-2xl mx-auto">
-            Ready to challenge your mind? Your learning journey continues here with AI-powered quizzes.
-          </p>
-          <div className="flex justify-center space-x-4 mt-8">
-            <button
-              onClick={() => onSectionChange("quiz")}
-              className="btn-modern group"
-            >
-              <Play className="h-6 w-6 mr-3 group-hover:animate-bounce" />
-              Start New Quiz
-              <Rocket className="h-5 w-5 ml-3 group-hover:animate-float" />
-            </button>
-            <button
-              onClick={() => onSectionChange("profile")}
-              className="btn-outline-modern group"
-            >
-              <BarChart3 className="h-5 w-5 mr-3 group-hover:animate-pulse" />
-              View Progress
-            </button>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="stat-card group">
-                <div className="flex items-center justify-between mb-6">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-xl group-hover:animate-float`}>
-                    <Icon className="h-8 w-8 text-white" />
-                  </div>
-                  <div className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    stat.changeType === 'positive' ? 'text-green-400 bg-green-500/20' : 'text-red-400 bg-red-500/20'
-                  }`}>
-                    {stat.change}
-                  </div>
+    <div className="space-y-12 animate-slide-up">
+      {/* Hero Welcome Section */}
+      <div className="relative overflow-hidden modern-card p-12 bg-gradient-to-br from-purple-900/20 to-pink-900/20 border-2 border-purple-500/30">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-shimmer"></div>
+        <div className="relative z-10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-6">
+              <div className="relative">
+                <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-purple-500/30 animate-pulse-glow">
+                  <span className="text-3xl font-black text-white">
+                    {user?.username?.charAt(0).toUpperCase()}
+                  </span>
                 </div>
-                <div className="stat-value mb-2">{stat.value}</div>
-                <div className="stat-label">{stat.label}</div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-bounce flex items-center justify-center">
+                  <Crown className="h-4 w-4 text-white" />
+                </div>
               </div>
-            );
-          })}
+              <div>
+                <h1 className="text-4xl lg:text-5xl font-black gradient-text mb-2">
+                  Welcome back, {user?.username}!
+                </h1>
+                <p className="text-xl text-white/70 mb-4">
+                  Ready to challenge your mind and climb the leaderboard?
+                </p>
+                <div className="flex items-center space-x-4">
+                  <div className="glass-morphism px-4 py-2 rounded-xl border border-green-500/30">
+                    <span className="text-green-400 font-semibold flex items-center">
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      Level 15 Scholar
+                    </span>
+                  </div>
+                  <div className="glass-morphism px-4 py-2 rounded-xl border border-blue-500/30">
+                    <span className="text-blue-400 font-semibold">7-day streak! 🔥</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <Button
+              onClick={() => onSectionChange("quiz")}
+              className="btn-modern relative group px-8 py-4 shadow-2xl"
+            >
+              <div className="flex items-center space-x-3">
+                <Play className="h-6 w-6" />
+                <span className="text-lg font-bold">Start Quiz</span>
+                <Rocket className="h-5 w-5 animate-float" />
+              </div>
+            </Button>
+          </div>
         </div>
+      </div>
 
-        {/* Recent Activity & Achievements */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Recent Quizzes */}
-          <div className="modern-card">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black gradient-text flex items-center">
-                <Activity className="mr-3 h-7 w-7 text-primary" />
-                Recent Activity
-              </h2>
-              <Button
-                variant="ghost"
-                onClick={() => onSectionChange("profile")}
-                className="text-primary hover:text-primary/80 font-semibold"
+      {/* Enhanced Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+        {stats.map((stat, index) => (
+          <div
+            key={index}
+            className="feature-card group cursor-pointer"
+            style={{animationDelay: `${index * 0.1}s`}}
+          >
+            <div className="relative overflow-hidden">
+              <div className={`absolute inset-0 bg-gradient-to-br ${stat.gradient} opacity-10 group-hover:opacity-20 transition-opacity duration-500`}></div>
+              
+              <div className="relative p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+                    <stat.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="text-right">
+                    <div className={`inline-flex items-center px-3 py-1 rounded-xl text-sm font-bold ${
+                      stat.trend === 'up' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                    }`}>
+                      {stat.trend === 'up' ? <TrendingUp className="h-4 w-4 mr-1" /> : null}
+                      {stat.change}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="text-4xl font-black gradient-text group-hover:scale-105 transition-transform duration-300">
+                    {stat.value}
+                  </div>
+                  <div className="text-lg font-semibold text-white/70 group-hover:text-white transition-colors duration-300">
+                    {stat.title}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="modern-card p-8">
+        <h2 className="text-3xl font-black gradient-text mb-8 flex items-center">
+          <Zap className="h-8 w-8 mr-4 text-yellow-400" />
+          Quick Actions
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {quickActions.map((action, index) => (
+            <button
+              key={index}
+              onClick={action.action}
+              className="group relative overflow-hidden glass-morphism p-8 rounded-2xl border border-white/20 hover:border-primary/40 transition-all duration-500 hover:scale-105"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br ${action.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
+              
+              <div className="relative text-center">
+                <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500`}>
+                  <action.icon className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-white transition-colors duration-300">
+                  {action.title}
+                </h3>
+                <p className="text-white/60 group-hover:text-white/80 transition-colors duration-300">
+                  {action.description}
+                </p>
+                <ChevronRight className="h-5 w-5 text-white/40 group-hover:text-primary group-hover:translate-x-2 transition-all duration-300 mx-auto mt-4" />
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Two Column Layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-12">
+        
+        {/* Recent Quizzes */}
+        <div className="modern-card p-8">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-black gradient-text flex items-center">
+              <Clock className="h-8 w-8 mr-4 text-blue-400" />
+              Recent Activity
+            </h2>
+            <Button
+              variant="ghost"
+              onClick={() => onSectionChange("quiz")}
+              className="glass-morphism border border-white/20 hover:border-primary/40 rounded-xl px-6 py-3"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              New Quiz
+            </Button>
+          </div>
+          
+          <div className="space-y-6">
+            {recentQuizzes.map((quiz, index) => (
+              <div
+                key={index}
+                className="group glass-morphism p-6 rounded-2xl border border-white/10 hover:border-primary/30 transition-all duration-500 hover:scale-105"
               >
-                View All <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-            
-            <div className="space-y-4">
-              {Array.isArray(recentQuizzes) && recentQuizzes.slice(0, 3).map((quiz: any, index: number) => (
-                <div key={index} className="glass-morphism p-4 rounded-xl border border-white/10 hover:border-primary/30 transition-all duration-300 group">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-                        <BookOpen className="h-6 w-6 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-white">{quiz.topic}</h3>
-                        <p className="text-white/60 text-sm flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" />
-                          {new Date(quiz.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                      <Brain className="h-6 w-6 text-white" />
                     </div>
-                    <div className="text-right">
-                      <div className={`text-2xl font-bold ${
-                        quiz.score >= 80 ? 'text-green-400' : 
-                        quiz.score >= 60 ? 'text-yellow-400' : 'text-red-400'
-                      }`}>
-                        {quiz.score}%
-                      </div>
-                      <div className="text-white/60 text-sm">
-                        {quiz.correctAnswers}/{quiz.totalQuestions}
-                      </div>
+                    <div>
+                      <h3 className="font-bold text-white group-hover:text-primary transition-colors duration-300">
+                        {quiz.title}
+                      </h3>
+                      <p className="text-sm text-white/60">{quiz.category} • {quiz.difficulty}</p>
                     </div>
                   </div>
-                </div>
-              )) || (
-                <div className="text-center py-12">
-                  <Brain className="h-16 w-16 text-white/30 mx-auto mb-4" />
-                  <p className="text-white/60 text-lg">No quizzes taken yet</p>
-                  <p className="text-white/40 text-sm">Start your first quiz to see your progress here</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Achievements */}
-          <div className="modern-card">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-black gradient-text flex items-center">
-                <Award className="mr-3 h-7 w-7 text-accent" />
-                Achievements
-              </h2>
-              <Badge className="badge-primary">
-                {achievements.filter(a => a.unlocked).length}/{achievements.length}
-              </Badge>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4">
-              {achievements.map((achievement, index) => {
-                const Icon = achievement.icon;
-                return (
-                  <div 
-                    key={index} 
-                    className={`glass-morphism p-4 rounded-xl border transition-all duration-300 ${
-                      achievement.unlocked 
-                        ? 'border-primary/30 hover:border-primary/50' 
-                        : 'border-white/10 opacity-50'
-                    }`}
-                  >
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ${
-                        achievement.unlocked 
-                          ? `bg-gradient-to-br ${achievement.gradient}` 
-                          : 'bg-white/10'
-                      }`}>
-                        <Icon className={`h-6 w-6 ${
-                          achievement.unlocked ? 'text-white' : 'text-white/30'
-                        }`} />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className={`font-bold ${
-                          achievement.unlocked ? 'text-white' : 'text-white/50'
-                        }`}>
-                          {achievement.name}
-                        </h3>
-                        <p className={`text-sm ${
-                          achievement.unlocked ? 'text-white/70' : 'text-white/30'
-                        }`}>
-                          {achievement.description}
-                        </p>
-                      </div>
-                      {achievement.unlocked && (
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                        </div>
-                      )}
+                  {quiz.badge && (
+                    <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-xl text-sm font-bold animate-pulse">
+                      {quiz.badge}
                     </div>
+                  )}
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className={`text-2xl font-bold ${
+                      quiz.score >= 90 ? 'text-green-400' : 
+                      quiz.score >= 70 ? 'text-yellow-400' : 'text-red-400'
+                    }`}>
+                      {quiz.score}%
+                    </div>
+                    <div className="text-sm text-white/60">{quiz.date}</div>
                   </div>
-                );
-              })}
-            </div>
+                  <ChevronRight className="h-5 w-5 text-white/40 group-hover:text-primary group-hover:translate-x-2 transition-all duration-300" />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="mt-16 text-center">
-          <h2 className="text-3xl font-black gradient-text mb-8">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Take Quiz",
-                description: "Challenge yourself with AI-generated questions",
-                icon: Play,
-                action: () => onSectionChange("quiz"),
-                gradient: "from-purple-500 to-pink-600",
-                delay: "0s"
-              },
-              {
-                title: "View Leaderboard",
-                description: "See how you rank against other players",
-                icon: Trophy,
-                action: () => onSectionChange("leaderboard"),
-                gradient: "from-yellow-500 to-orange-600",
-                delay: "0.1s"
-              },
-              {
-                title: "Update Profile",
-                description: "Customize your profile and preferences",
-                icon: Users,
-                action: () => onSectionChange("profile"),
-                gradient: "from-emerald-500 to-teal-600",
-                delay: "0.2s"
-              }
-            ].map((action, index) => {
-              const Icon = action.icon;
-              return (
-                <button
-                  key={index}
-                  onClick={action.action}
-                  className="modern-card group text-left hover:scale-105 transition-all duration-500"
-                  style={{ animationDelay: action.delay }}
-                >
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center mb-6 shadow-xl group-hover:animate-float mx-auto`}>
-                    <Icon className="h-8 w-8 text-white" />
+        {/* Achievements */}
+        <div className="modern-card p-8">
+          <h2 className="text-3xl font-black gradient-text mb-8 flex items-center">
+            <Award className="h-8 w-8 mr-4 text-yellow-400" />
+            Achievements
+          </h2>
+          
+          <div className="space-y-6">
+            {achievements.map((achievement, index) => (
+              <div
+                key={index}
+                className={`group p-6 rounded-2xl border-2 transition-all duration-500 ${
+                  achievement.unlocked 
+                    ? 'glass-morphism border-green-500/40 bg-green-500/10' 
+                    : 'glass-morphism border-white/20 hover:border-primary/30'
+                }`}
+              >
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-xl transition-all duration-500 ${
+                    achievement.unlocked 
+                      ? 'bg-gradient-to-br from-yellow-500 to-orange-500 animate-pulse-glow' 
+                      : 'bg-gradient-to-br from-gray-600 to-gray-700 group-hover:from-purple-500 group-hover:to-pink-500'
+                  }`}>
+                    <achievement.icon className="h-7 w-7 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-3 text-center">{action.title}</h3>
-                  <p className="text-white/70 text-center leading-relaxed">{action.description}</p>
-                  <div className="flex justify-center mt-6">
-                    <ChevronRight className="h-6 w-6 text-primary group-hover:translate-x-2 transition-transform duration-300" />
+                  <div className="flex-1">
+                    <h3 className={`font-bold text-lg ${
+                      achievement.unlocked ? 'text-green-400' : 'text-white group-hover:text-primary'
+                    } transition-colors duration-300`}>
+                      {achievement.title}
+                    </h3>
+                    <p className="text-white/60 text-sm">{achievement.description}</p>
                   </div>
-                </button>
-              );
-            })}
+                  {achievement.unlocked && (
+                    <div className="text-green-400">
+                      <Star className="h-6 w-6 animate-sparkle" />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-white/70">Progress</span>
+                    <span className={achievement.unlocked ? 'text-green-400' : 'text-white/70'}>
+                      {achievement.progress}%
+                    </span>
+                  </div>
+                  <div className="progress-bar">
+                    <div 
+                      className={`progress-fill ${
+                        achievement.unlocked ? 'from-green-400 to-emerald-400' : 'from-primary to-accent'
+                      }`}
+                      style={{ width: `${achievement.progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
