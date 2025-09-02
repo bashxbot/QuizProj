@@ -349,7 +349,7 @@ body {
 }
 
 .feature-card {
-  @apply modern-card group cursor-pointer;
+  @apply modern-card cursor-pointer;
   transform-style: preserve-3d;
   transition: all 0.6s ease;
 }
