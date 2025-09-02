@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
@@ -107,6 +106,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import MobileNav from "./mobile-nav";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -155,6 +155,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
   const [difficulty, setDifficulty] = useState('medium');
   const [privacy, setPrivacy] = useState('friends');
   const [activeView, setActiveView] = useState<'navigation' | 'settings' | 'profile'>('navigation');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu
 
   // Mock user stats
   const userStats = {
@@ -449,7 +450,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
             </>
           )}
         </div>
-        
+
         {hasChildren && isExpanded && (
           <div className="ml-2 mt-1 space-y-1 animate-fade-in-up">
             {item.children?.map(child => renderNavigationItem(child, level + 1))}
@@ -517,7 +518,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
           </Avatar>
           <h3 className="mobile-text-lg font-bold mb-1">{user?.username}</h3>
           <p className="mobile-text-sm text-muted-foreground mb-4">Level {userStats.level} Quiz Master</p>
-          
+
           {/* XP Progress */}
           <div className="space-y-2">
             <div className="flex justify-between mobile-text-sm">
@@ -587,15 +588,79 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
     );
   };
 
+  const renderContent = () => {
+    switch (activeView) {
+      case 'navigation':
+        return (
+          <div className="py-4">
+            <nav className="space-y-1">
+              {navigationItems.map(item => renderNavigationItem(item))}
+            </nav>
+          </div>
+        );
+      case 'profile':
+        return renderUserProfile();
+      case 'settings':
+        return (
+          <div className="py-4 space-y-6">
+            <div className="settings-section">
+              <h3 className="settings-section-title">Appearance</h3>
+              {settingsItems.slice(0, 4).map(renderSettingsItem)}
+            </div>
+
+            <div className="settings-section">
+              <h3 className="settings-section-title">Accessibility</h3>
+              {settingsItems.slice(4, 8).map(renderSettingsItem)}
+            </div>
+
+            <div className="settings-section">
+              <h3 className="settings-section-title">Preferences</h3>
+              {settingsItems.slice(8).map(renderSettingsItem)}
+            </div>
+
+            <Separator />
+
+            <div className="settings-section">
+              <h3 className="settings-section-title">About</h3>
+              <div className="space-y-3">
+                <Button variant="ghost" className="w-full justify-start">
+                  <HelpCircle className="mobile-icon mr-3" />
+                  Help & Support
+                </Button>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Info className="mobile-icon mr-3" />
+                  About QuizApp
+                </Button>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Shield className="mobile-icon mr-3" />
+                  Privacy Policy
+                </Button>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
-    <>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex relative pb-20 lg:pb-0">
       {/* Mobile Overlay */}
-      {isOpen && (
+      {isMobileMenuOpen && (
         <div 
-          className="sidebar-overlay lg:hidden"
-          onClick={onToggle}
+          className="sidebar-overlay"
+          onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
+
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 btn-icon btn-glass"
+      >
+        {isMobileMenuOpen ? <X className="mobile-icon" /> : <Menu className="mobile-icon" />}
+      </button>
 
       {/* Sidebar */}
       <aside className={cn(
@@ -663,54 +728,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
 
           {/* Content */}
           <ScrollArea className="flex-1 px-2">
-            {activeView === 'navigation' && (
-              <div className="py-4">
-                <nav className="space-y-1">
-                  {navigationItems.map(item => renderNavigationItem(item))}
-                </nav>
-              </div>
-            )}
-
-            {activeView === 'profile' && renderUserProfile()}
-
-            {activeView === 'settings' && (
-              <div className="py-4 space-y-6">
-                <div className="settings-section">
-                  <h3 className="settings-section-title">Appearance</h3>
-                  {settingsItems.slice(0, 4).map(renderSettingsItem)}
-                </div>
-
-                <div className="settings-section">
-                  <h3 className="settings-section-title">Accessibility</h3>
-                  {settingsItems.slice(4, 8).map(renderSettingsItem)}
-                </div>
-
-                <div className="settings-section">
-                  <h3 className="settings-section-title">Preferences</h3>
-                  {settingsItems.slice(8).map(renderSettingsItem)}
-                </div>
-
-                <Separator />
-
-                <div className="settings-section">
-                  <h3 className="settings-section-title">About</h3>
-                  <div className="space-y-3">
-                    <Button variant="ghost" className="w-full justify-start">
-                      <HelpCircle className="mobile-icon mr-3" />
-                      Help & Support
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <Info className="mobile-icon mr-3" />
-                      About QuizApp
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start">
-                      <Shield className="mobile-icon mr-3" />
-                      Privacy Policy
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
+            {renderContent()}
           </ScrollArea>
 
           {/* Footer */}
@@ -726,19 +744,26 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
                   <p className="mobile-text-sm font-medium truncate">{user.username}</p>
                   <p className="mobile-text-xs text-muted-foreground">Level {userStats.level}</p>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                <button
                   onClick={handleLogout}
-                  className="btn-icon text-muted-foreground hover:text-destructive"
+                  className="mobile-button btn-danger flex items-center gap-2 justify-start"
                 >
                   <LogOut className="mobile-icon" />
-                </Button>
+                  <span className="mobile-text-sm">Logout</span>
+                </button>
               </div>
             )}
           </div>
         </div>
       </aside>
-    </>
+
+      {/* Main Content */}
+      <div className="flex-1 lg:ml-80 mobile-container py-4 lg:py-8">
+        {renderContent()}
+      </div>
+
+      {/* Mobile Navigation */}
+      <MobileNav activeTab={activeView} setActiveTab={setActiveView} />
+    </div>
   );
 }

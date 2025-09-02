@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -224,6 +223,7 @@ import {
   Dice6
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { cn } from "@/lib/utils";
 
 interface DashboardStats {
   totalQuizzes: number;
@@ -292,6 +292,7 @@ export function Dashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showAchievements, setShowAchievements] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showQuizSelection, setShowQuizSelection] = useState(false); // Added state for quiz selection
 
   // Update time every second
   useEffect(() => {
@@ -487,7 +488,7 @@ export function Dashboard() {
     const date = new Date(dateString);
     const now = new Date();
     const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-    
+
     if (diffInMinutes < 1) return 'Just now';
     if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
@@ -562,7 +563,7 @@ export function Dashboard() {
             {dailyChallenge.timeRemaining}
           </Badge>
         </div>
-        
+
         <div className="space-y-4">
           <div>
             <div className="flex justify-between items-center mb-2">
@@ -576,7 +577,7 @@ export function Dashboard() {
               className="h-2"
             />
           </div>
-          
+
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Gift className="mobile-icon text-yellow-400" />
@@ -673,7 +674,7 @@ export function Dashboard() {
               <Zap className="mobile-icon text-primary" />
               Progress Goals
             </h3>
-            
+
             <div className="grid gap-4 sm:gap-6">
               <div>
                 <div className="flex justify-between items-center mb-2">
@@ -759,7 +760,7 @@ export function Dashboard() {
               <Clock className="mobile-icon text-primary" />
               Recent Quiz Attempts
             </h3>
-            
+
             <ScrollArea className="h-64 sm:h-80">
               <div className="space-y-3">
                 {(quizHistory || []).slice(0, 10).map((attempt: QuizAttempt) => (
@@ -789,7 +790,7 @@ export function Dashboard() {
                     </div>
                   </div>
                 ))}
-                
+
                 {(!quizHistory || quizHistory.length === 0) && (
                   <div className="text-center py-8 text-muted-foreground">
                     <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
@@ -859,7 +860,7 @@ export function Dashboard() {
                     <p className="mobile-text-xs text-muted-foreground mt-1">
                       {achievement.description}
                     </p>
-                    
+
                     {achievement.progress !== undefined && (
                       <div className="mt-3 space-y-1">
                         <div className="flex justify-between mobile-text-xs">
@@ -872,7 +873,7 @@ export function Dashboard() {
                         />
                       </div>
                     )}
-                    
+
                     {achievement.unlockedAt && (
                       <p className="mobile-text-xs text-muted-foreground mt-2">
                         Unlocked {formatRelativeTime(achievement.unlockedAt)}
@@ -901,7 +902,7 @@ export function Dashboard() {
                 Add Friend
               </Button>
             </div>
-            
+
             <div className="space-y-3">
               {mockFriends.map(friend => (
                 <div key={friend.id} className="flex items-center gap-4 p-3 rounded-lg glass-light">
@@ -916,7 +917,7 @@ export function Dashboard() {
                       friend.isOnline ? "bg-green-400" : "bg-gray-400"
                     )} />
                   </div>
-                  
+
                   <div className="flex-grow min-w-0">
                     <div className="flex items-center gap-2">
                       <h4 className="mobile-text-sm font-medium">{friend.username}</h4>
@@ -933,7 +934,7 @@ export function Dashboard() {
                       {friend.isOnline ? 'Online now' : `Last seen ${formatRelativeTime(friend.lastActive)}`}
                     </p>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="ghost" className="btn-icon">
                       <MessageCircle className="mobile-icon" />
@@ -958,7 +959,7 @@ export function Dashboard() {
                 View Full
               </Button>
             </div>
-            
+
             <div className="space-y-2">
               {(leaderboard || []).slice(0, 5).map((entry: any, index: number) => (
                 <div key={entry.id} className="flex items-center gap-4 p-3 rounded-lg glass-light">
@@ -971,20 +972,20 @@ export function Dashboard() {
                   )}>
                     {index + 1}
                   </div>
-                  
+
                   <Avatar className="w-8 h-8">
                     <AvatarFallback className="bg-gradient-to-br from-primary to-purple-400 text-white mobile-text-sm">
                       {entry.username?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  
+
                   <div className="flex-grow min-w-0">
                     <h4 className="mobile-text-sm font-medium truncate">{entry.username}</h4>
                     <p className="mobile-text-xs text-muted-foreground">
                       {entry.quizzesTaken} quizzes • {entry.averageScore?.toFixed(1)}% avg
                     </p>
                   </div>
-                  
+
                   <div className="text-right">
                     <div className="mobile-text-sm font-bold text-primary">
                       {entry.totalScore?.toLocaleString()}
