@@ -17,11 +17,11 @@ interface DashboardProps {
 export default function Dashboard({ onSectionChange }: DashboardProps) {
   const { data: profile } = useQuery({
     queryKey: ["/api/profile"],
-  });
+  }) as { data: any };
 
   const { data: recentQuizzes } = useQuery({
     queryKey: ["/api/quiz-history"],
-  });
+  }) as { data: any[] };
 
   const stats = [
     {
@@ -137,7 +137,7 @@ export default function Dashboard({ onSectionChange }: DashboardProps) {
             </div>
             
             <div className="space-y-4">
-              {recentQuizzes?.slice(0, 3).map((quiz: any, index: number) => (
+              {Array.isArray(recentQuizzes) && recentQuizzes.slice(0, 3).map((quiz: any, index: number) => (
                 <div key={index} className="glass-morphism p-4 rounded-xl border border-white/10 hover:border-primary/30 transition-all duration-300 group">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">

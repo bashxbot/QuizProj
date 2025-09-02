@@ -11,7 +11,7 @@ import {
   Trophy, Star, Target, TrendingUp, Clock, Award, Settings, Palette, 
   Volume2, Bell, Shield, User, Moon, Sun, Monitor, Sparkles, Zap,
   Crown, Medal, ChevronRight, Activity, Calendar, BarChart3,
-  Eye, EyeOff, Save, RefreshCw, Gamepad2, Globe, Lock
+  Eye, EyeOff, Save, RefreshCw, Gamepad2, Globe, Lock, Play, Rocket
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -28,11 +28,11 @@ export default function Profile() {
 
   const { data: profile } = useQuery({
     queryKey: ["/api/profile"],
-  });
+  }) as { data: any };
 
   const { data: quizHistory } = useQuery({
     queryKey: ["/api/quiz-history"],
-  });
+  }) as { data: any[] };
 
   // Apply theme changes
   useEffect(() => {
@@ -67,13 +67,8 @@ export default function Profile() {
     localStorage.setItem('userSettings', JSON.stringify(settings));
     setShowSettings(false);
     
-    // Show success notification
-    if (window.toast) {
-      window.toast({
-        title: "Settings Applied! ✨",
-        description: "Your preferences have been saved successfully.",
-      });
-    }
+    // Settings saved successfully
+    console.log('Settings applied successfully');
   };
 
   if (!profile) {
@@ -176,7 +171,7 @@ export default function Profile() {
     },
   ];
 
-  const recentQuizzes = quizHistory?.slice(0, 5) || [];
+  const recentQuizzes = Array.isArray(quizHistory) ? quizHistory.slice(0, 5) : [];
 
   const getScoreColor = (score: number) => {
     if (score >= 90) return "text-emerald-400 bg-gradient-to-r from-emerald-500/20 to-green-500/20 border-emerald-500/30";

@@ -66,7 +66,7 @@ export default function HomePage() {
   const renderContent = () => {
     switch (currentSection) {
       case "dashboard":
-        return <Dashboard onStartQuiz={handleStartQuiz} />;
+        return <Dashboard onSectionChange={handleSectionChange} />;
       case "quiz":
         // Show results if available
         if (quizState.quizResults && quizState.currentQuiz) {
@@ -93,29 +93,31 @@ export default function HomePage() {
           );
         }
         // Show quiz selection by default
-        return <QuizSelection onQuizStart={handleQuizStart} />;
+        return <QuizSelection onStartQuiz={handleQuizStart} isLoading={false} />;
       case "leaderboard":
         return <Leaderboard />;
       case "profile":
         return <Profile />;
       default:
-        return <Dashboard onStartQuiz={handleStartQuiz} />;
+        return <Dashboard onSectionChange={handleSectionChange} />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="page-container">
       <Navbar 
         currentSection={currentSection}
         onSectionChange={handleSectionChange}
       />
-      <div className="flex">
+      <div className="flex pt-20">
         <Sidebar 
           currentSection={currentSection} 
           onSectionChange={handleSectionChange} 
         />
-        <main className="flex-1 p-6 md:p-8 overflow-auto">
-          {renderContent()}
+        <main className="flex-1 p-6 md:p-8 lg:p-12 overflow-auto min-h-screen">
+          <div className="max-w-7xl mx-auto">
+            {renderContent()}
+          </div>
         </main>
       </div>
     </div>

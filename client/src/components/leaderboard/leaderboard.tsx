@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Trophy, Medal, Award, Crown, Star, Target, TrendingUp, 
   Users, Zap, Flame, Sparkles, ChevronUp, ChevronDown,
-  Brain, Clock, BarChart3
+  Brain, Clock, BarChart3, Activity, Rocket, Play
 } from "lucide-react";
 
 interface LeaderboardEntry {
@@ -82,7 +82,7 @@ export default function Leaderboard() {
           {[
             { label: "Total Players", value: leaderboard?.length || 0, icon: Users, gradient: "from-blue-500 to-cyan-500" },
             { label: "Active Today", value: Math.floor((leaderboard?.length || 0) * 0.3), icon: Activity, gradient: "from-green-500 to-emerald-500" },
-            { label: "Avg Score", value: `${Math.round(leaderboard?.reduce((acc, user) => acc + user.averageScore, 0) / (leaderboard?.length || 1) || 0)}%`, icon: Target, gradient: "from-purple-500 to-pink-500" },
+            { label: "Avg Score", value: `${Math.round((leaderboard?.reduce((acc, user) => acc + user.averageScore, 0) || 0) / (leaderboard?.length || 1))}%`, icon: Target, gradient: "from-purple-500 to-pink-500" },
             { label: "Top Score", value: `${Math.max(...(leaderboard?.map(u => u.averageScore) || [0]))}%`, icon: Flame, gradient: "from-orange-500 to-red-500" }
           ].map((stat, index) => {
             const Icon = stat.icon;

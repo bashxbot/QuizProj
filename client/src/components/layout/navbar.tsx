@@ -1,7 +1,7 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Brain, Menu, LogOut, Settings, Sparkles, Moon, Sun, Monitor, Bell, Shield, Palette, Save, Eye, EyeOff, Zap, Crown } from "lucide-react";
+import { Brain, Menu, LogOut, Settings, Sparkles, Moon, Sun, Monitor, Bell, Shield, Palette, Save, Eye, EyeOff, Zap, Crown, BarChart3, Play, Trophy, User } from "lucide-react";
 import type { Section } from "@/pages/home-page";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -64,10 +64,10 @@ export default function Navbar({ currentSection, onSectionChange }: NavbarProps)
   }, [theme]);
 
   const navItems = [
-    { key: "dashboard" as const, label: "Dashboard", icon: "fas fa-tachometer-alt", gradient: "from-blue-500 to-cyan-500" },
-    { key: "quiz" as const, label: "Take Quiz", icon: "fas fa-play-circle", gradient: "from-purple-500 to-pink-500" },
-    { key: "leaderboard" as const, label: "Leaderboard", icon: "fas fa-trophy", gradient: "from-yellow-500 to-orange-500" },
-    { key: "profile" as const, label: "Profile", icon: "fas fa-user", gradient: "from-green-500 to-emerald-500" },
+    { key: "dashboard" as const, label: "Dashboard", icon: BarChart3, gradient: "from-blue-500 to-cyan-500" },
+    { key: "quiz" as const, label: "Take Quiz", icon: Play, gradient: "from-purple-500 to-pink-500" },
+    { key: "leaderboard" as const, label: "Leaderboard", icon: Trophy, gradient: "from-yellow-500 to-orange-500" },
+    { key: "profile" as const, label: "Profile", icon: User, gradient: "from-green-500 to-emerald-500" },
   ];
 
   return (
@@ -108,7 +108,7 @@ export default function Navbar({ currentSection, onSectionChange }: NavbarProps)
                   >
                     <div className="flex items-center space-x-2">
                       <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-lg`}>
-                        <i className={`${item.icon} text-white text-sm`}></i>
+                        <item.icon className="h-4 w-4 text-white" />
                       </div>
                       <span className="font-semibold">{item.label}</span>
                     </div>
@@ -374,7 +374,7 @@ export default function Navbar({ currentSection, onSectionChange }: NavbarProps)
                 data-testid={`mobile-nav-${item.key}`}
               >
                 <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-2 shadow-lg group-hover:animate-float`}>
-                  <i className={`${item.icon} text-white text-sm`}></i>
+                  <item.icon className="h-5 w-5 text-white" />
                 </div>
                 <span className="text-xs font-semibold">{item.label}</span>
               </button>
