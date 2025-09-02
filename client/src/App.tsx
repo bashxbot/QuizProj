@@ -16,6 +16,13 @@ function Router() {
       <Switch>
         <Route path="/auth" component={AuthPage} />
         <ProtectedRoute path="/" component={HomePage} />
+        <ProtectedRoute path="/dashboard" component={HomePage} />
+        <ProtectedRoute path="/quiz" component={HomePage} />
+        <ProtectedRoute path="/leaderboard" component={HomePage} />
+        <ProtectedRoute path="/profile" component={HomePage} />
+        <ProtectedRoute path="/stats" component={HomePage} />
+        <ProtectedRoute path="/settings" component={HomePage} />
+        <ProtectedRoute path="/achievements" component={HomePage} />
         <Route component={NotFound} />
       </Switch>
     </QuizProvider>

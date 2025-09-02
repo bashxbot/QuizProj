@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLocation } from "wouter";
 import Navbar from "@/components/layout/navbar";
 import { Sidebar } from "@/components/layout/sidebar";
@@ -26,7 +26,7 @@ export default function HomePage() {
   // Generate quiz mutation
   const generateQuizMutation = useMutation({
     mutationFn: async ({ topic, difficulty }: { topic: string; difficulty: string }) => {
-      const response = await fetch('/api/generate-quiz', {
+      const response = await fetch('/api/quiz/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -111,21 +111,22 @@ export default function HomePage() {
   const getCurrentSection = (): Section => {
     if (quizState.isQuizActive) return "quiz";
 
-    if (location.includes('/quiz')) return "quiz";
-    if (location.includes('/leaderboard')) return "leaderboard";
-    if (location.includes('/profile')) return "profile";
-    if (location.includes('/achievements')) return "achievements";
-    if (location.includes('/stats')) return "stats";
+    if (location === '/quiz') return "quiz";
+    if (location === '/leaderboard') return "leaderboard";
+    if (location === '/profile') return "profile";
+    if (location === '/achievements') return "achievements";
+    if (location === '/stats') return "stats";
+    if (location === '/settings') return "settings";
 
     return "dashboard";
   };
 
   // Update active section when location changes
-  useState(() => {
+  React.useEffect(() => {
     const currentSection = getCurrentSection();
     setActiveSection(currentSection);
     setActiveTab(currentSection);
-  });
+  }, [location, quizState.isQuizActive]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
@@ -161,12 +162,32 @@ export default function HomePage() {
 
       {/* Layout Container */}
       <div className="flex">
-        {/* Sidebar */}
+        {/* Desktop Sidebar */}
         <Sidebar 
-          isOpen={isSidebarOpen}
-          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="lg:relative lg:translate-x-0"
+          currentSection={activeSection}
+          onSectionChange={handleSectionChange}
+          className="hidden lg:flex"
         />
+
+        {/* Mobile Sidebar Overlay */}
+        {isSidebarOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div 
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
+              onClick={() => setIsSidebarOpen(false)} 
+            />
+            <div className="absolute left-0 top-0 bottom-0 w-80 bg-background border-r border-border">
+              <Sidebar 
+                currentSection={activeSection}
+                onSectionChange={(section) => {
+                  handleSectionChange(section);
+                  setIsSidebarOpen(false);
+                }}
+                className="h-full"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Main Content */}
         <main className={cn(
