@@ -10,12 +10,7 @@ import { useQuizState } from "@/hooks/use-quiz-state";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import type { QuizQuestion } from "@shared/schema";
 
-interface ActiveQuizProps {
-  quiz: any;
-  onQuizComplete: (results: any) => void;
-}
-
-export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
+export default function ActiveQuiz() {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -32,13 +27,17 @@ export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
 
   const submitQuizMutation = useMutation({
     mutationFn: async (answers: number[]) => {
+      if (!quizState.currentQuiz?.id) {
+        throw new Error("No quiz selected");
+      }
+      
       // Calculate time spent in seconds with proper null checks
-      const totalTime = 20 * 60; // Always 20 minutes (1200 seconds)
+      const totalTime = (quizState.currentQuiz.timeLimit || 1200); // Use quiz time limit or 20 minutes default
       const remainingTime = quizState.timeRemaining || 0;
       const timeSpent = Math.max(1, totalTime - remainingTime); // Ensure positive number, minimum 1 second
 
       const res = await apiRequest("POST", "/api/quiz/submit", {
-        quizId: quiz.id,
+        quizId: quizState.currentQuiz.id,
         answers: answers || [],
         timeSpent: timeSpent || 1, // Ensure timeSpent is never null/undefined
       });
@@ -47,9 +46,14 @@ export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
     onSuccess: (results) => {
       setQuizResults(results);
       setIsQuizActive(false);
-      onQuizComplete(results);
       queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
       queryClient.invalidateQueries({ queryKey: ["/api/leaderboard"] });
+      
+      toast({
+        title: "Quiz Submitted!",
+        description: `You scored ${results.score}% and earned ${results.pointsEarned} points!`,
+        variant: "default",
+      });
     },
     onError: (error) => {
       toast({
@@ -67,14 +71,14 @@ export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
 
   // Initialize timer
   useEffect(() => {
-    if (!quiz || !quizState.isQuizActive) return;
+    if (!quizState.currentQuiz || !quizState.isQuizActive) return;
 
-    // Initialize timer if not set - always 20 minutes (1200 seconds)
+    // Initialize timer if not set
     if (quizState.timeRemaining <= 0) {
-      const timeLimit = 20 * 60; // 20 minutes in seconds
+      const timeLimit = quizState.currentQuiz.timeLimit || 1200; // Use quiz time limit or 20 minutes default
       setTimeRemaining(timeLimit);
     }
-  }, [quiz, setTimeRemaining, quizState.isQuizActive]);
+  }, [quizState.currentQuiz, setTimeRemaining, quizState.isQuizActive, quizState.timeRemaining]);
 
   // Timer countdown
   useEffect(() => {
@@ -120,7 +124,7 @@ export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < quiz.questions.length - 1) {
+    if (currentQuestionIndex < quizState.currentQuiz.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     }
   };
@@ -139,7 +143,7 @@ export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+  if (!quizState.currentQuiz || !quizState.currentQuiz.questions || quizState.currentQuiz.questions.length === 0) {
     return (
       <div className="max-w-4xl mx-auto text-center py-12">
         <p className="text-muted-foreground">Loading quiz...</p>
@@ -147,8 +151,8 @@ export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
     );
   }
 
-  const currentQuestion = quiz.questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / quiz.questions.length) * 100;
+  const currentQuestion = quizState.currentQuiz.questions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / quizState.currentQuiz.questions.length) * 100;
   const answeredQuestions = quizState.currentAnswers.filter(answer => answer !== -1).length;
 
   return (
@@ -158,12 +162,12 @@ export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-foreground" data-testid="quiz-title">
-              {quiz.title}
+              {quizState.currentQuiz.title}
             </h2>
             <div className="flex items-center space-x-4">
               <div className="text-sm text-muted-foreground">
                 Question <span data-testid="current-question">{currentQuestionIndex + 1}</span> of{" "}
-                <span data-testid="total-questions">{quiz.questions.length}</span>
+                <span data-testid="total-questions">{quizState.currentQuiz.questions.length}</span>
               </div>
               <div className={`flex items-center space-x-2 text-sm px-3 py-2 rounded-lg font-medium transition-all duration-200 ${
                 quizState.timeRemaining <= 60 
@@ -225,10 +229,10 @@ export default function ActiveQuiz({ quiz, onQuizComplete }: ActiveQuizProps) {
         </Button>
 
         <div className="text-sm text-muted-foreground">
-          {answeredQuestions} of {quiz.questions.length} answered
+          {answeredQuestions} of {quizState.currentQuiz.questions.length} answered
         </div>
 
-        {currentQuestionIndex === quiz.questions.length - 1 ? (
+        {currentQuestionIndex === quizState.currentQuiz.questions.length - 1 ? (
           <Button
             onClick={handleSubmitQuiz}
             disabled={submitQuizMutation.isPending}

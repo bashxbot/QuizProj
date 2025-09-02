@@ -193,7 +193,7 @@ export default function HomePage() {
         <main className={cn(
           "flex-1 min-h-screen transition-all duration-300",
           "pt-20 lg:pt-0", // Add top padding for mobile header
-          "pb-20 lg:pb-0", // Add bottom padding for mobile nav
+          "pb-24 lg:pb-4", // Add bottom padding for mobile nav
           isSidebarOpen && "lg:ml-0" // No margin adjustment needed on desktop
         )}>
           <div className="container mx-auto">

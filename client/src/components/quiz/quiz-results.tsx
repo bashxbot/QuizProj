@@ -7,21 +7,25 @@ import { useQuizState } from "@/hooks/use-quiz-state";
 import { useState } from "react";
 
 interface QuizResultsProps {
-  results: {
-    id: string;
-    score: number;
-    pointsEarned: number;
-    correctAnswers: any[];
-  };
   onTakeAnother: () => void;
   onViewLeaderboard: () => void;
 }
 
-export default function QuizResults({ results, onTakeAnother, onViewLeaderboard }: QuizResultsProps) {
-  const { score, pointsEarned, correctAnswers } = results;
-  const { quizState, setCurrentQuiz } = useQuizState();
+export default function QuizResults({ onTakeAnother, onViewLeaderboard }: QuizResultsProps) {
+  const { quizState } = useQuizState();
   const [showAllQuestions, setShowAllQuestions] = useState(false);
-  const totalQuestions = correctAnswers.length;
+  
+  if (!quizState.quizResults) {
+    return (
+      <Card className="max-w-2xl mx-auto">
+        <CardContent className="p-6">
+          <p className="text-center text-muted-foreground">No quiz results available</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const { score, pointsEarned, correctAnswers, userAnswers, totalQuestions } = quizState.quizResults;
   const correctCount = Math.round((score / 100) * totalQuestions);
   const percentage = Math.round(score);
 
