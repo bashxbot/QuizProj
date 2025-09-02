@@ -193,7 +193,12 @@ html {
 
 .interactive-card {
   @apply modern-card cursor-pointer;
-  @apply hover:border-primary/30 active:scale-[0.98];
+  @apply active:scale-[0.98];
+  transition: all 0.3s ease;
+}
+
+.interactive-card:hover {
+  border-color: rgba(139, 92, 246, 0.3);
 }
 
 .feature-card {

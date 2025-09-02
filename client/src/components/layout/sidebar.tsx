@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useRouter } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,88 +22,29 @@ import {
   Clock,
   Award,
   TrendingUp,
-  Shield,
   Bell,
   Moon,
   Sun,
   Volume2,
   VolumeX,
-  Smartphone,
   Monitor,
-  Palette,
   Globe,
   HelpCircle,
   Info,
   BookOpen,
   BarChart3,
   Calendar,
-  Gift,
   Zap,
   Brain,
-  Gamepad2,
   Crown,
-  Diamond,
   Flame,
   Heart,
-  Sparkles,
-  Rocket,
-  Lightning,
-  Coffee,
-  Music,
-  Camera,
-  Mic,
-  Headphones,
-  Wifi,
-  Battery,
-  Signal,
-  Download,
-  Upload,
-  Share,
-  Lock,
-  Unlock,
+  Shield,
   Eye,
-  EyeOff,
-  Search,
-  Filter,
-  Sort,
-  Grid,
-  List,
-  Map,
-  Bookmark,
-  Tag,
-  Flag,
-  Pin,
-  Archive,
-  Trash,
-  Edit,
-  Copy,
-  Scissors,
-  Clipboard,
-  Link as LinkIcon,
-  Mail,
-  Phone,
-  MessageCircle,
-  Video,
-  Image,
-  File,
-  Folder,
-  FolderOpen,
-  Save,
-  Upload as UploadIcon,
-  Download as DownloadIcon,
-  Refresh,
-  RotateCcw,
-  RotateCw,
-  Maximize,
   Minimize,
-  Plus,
-  Minus,
-  Check,
-  XCircle,
-  AlertCircle,
-  InfoIcon,
-  CheckCircle,
-  AlertTriangle
+  Save,
+  Lock,
+  Unlock
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import MobileNav from "./mobile-nav";
@@ -139,7 +80,7 @@ interface SettingsItem {
 }
 
 export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
-  const [location, setLocation] = useLocation();
+  const [location, navigate] = useLocation();
   const { user, logout } = useAuth();
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('dark');
@@ -183,7 +124,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
     {
       id: 'quizzes',
       label: 'Quizzes',
-      href: '/quizzes',
+      href: '/quiz',
       icon: Brain,
       color: 'text-purple-400',
       description: 'Take and create quizzes',
@@ -254,7 +195,11 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         { label: 'System', value: 'system' }
       ],
       icon: theme === 'light' ? Sun : theme === 'dark' ? Moon : Monitor,
-      onChange: setTheme
+      onChange: (value) => {
+        setTheme(value);
+        // Apply theme to document
+        document.documentElement.className = value === 'system' ? '' : `theme-${value}`;
+      }
     },
     {
       id: 'notifications',
@@ -280,7 +225,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
       description: 'Haptic feedback on mobile',
       type: 'switch',
       value: vibrationEnabled,
-      icon: Smartphone,
+      icon: Monitor, // Assuming Monitor icon can represent device feature
       onChange: setVibrationEnabled
     },
     {
@@ -289,7 +234,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
       description: 'Enable smooth transitions',
       type: 'switch',
       value: animationsEnabled,
-      icon: Sparkles,
+      icon: Star, // Replaced Sparkles with Star as per common icon usage for 'feature enabled'
       onChange: setAnimationsEnabled
     },
     {
@@ -378,9 +323,17 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
   const handleLogout = async () => {
     try {
       await logout();
-      setLocation('/auth');
+      navigate('/auth');
     } catch (error) {
       console.error('Logout failed:', error);
+    }
+  };
+
+  const handleNavigation = (href: string) => {
+    navigate(href);
+    // Close mobile sidebar after navigation if it's open
+    if (window.innerWidth < 1024 && isOpen) {
+      onToggle();
     }
   };
 
@@ -393,61 +346,41 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
       <div key={item.id} className={cn("mb-1", level > 0 && "ml-4")}>
         <div 
           className={cn(
-            "sidebar-item group relative",
-            isActive && "active",
-            hasChildren && "cursor-pointer"
+            "sidebar-item group relative flex items-center gap-3 p-3 rounded-lg mx-2 transition-all duration-200 min-h-[48px]",
+            isActive ? "bg-primary/20 text-primary border-l-4 border-primary" : "hover:bg-white/10 hover:transform hover:translate-x-1",
+            !hasChildren && "cursor-pointer" 
           )}
-          onClick={hasChildren ? () => toggleSection(item.id) : undefined}
+          onClick={() => {
+            if (hasChildren) {
+              toggleSection(item.id);
+            } else {
+              handleNavigation(item.href);
+            }
+          }}
         >
-          {!hasChildren ? (
-            <Link href={item.href} className="flex items-center gap-3 w-full">
-              <item.icon className={cn("mobile-icon flex-shrink-0", item.color)} />
-              <div className="flex-grow min-w-0">
-                <span className="mobile-text-sm font-medium truncate block">
-                  {item.label}
-                </span>
-                {item.description && (
-                  <span className="mobile-text-xs text-muted-foreground truncate block">
-                    {item.description}
-                  </span>
-                )}
-              </div>
-              {item.badge && (
-                <Badge variant="secondary" className="text-xs">
-                  {item.badge}
-                </Badge>
-              )}
-              {item.shortcut && (
-                <span className="mobile-text-xs text-muted-foreground font-mono">
-                  {item.shortcut}
-                </span>
-              )}
-            </Link>
-          ) : (
-            <>
-              <item.icon className={cn("mobile-icon flex-shrink-0", item.color)} />
-              <div className="flex-grow min-w-0">
-                <span className="mobile-text-sm font-medium truncate block">
-                  {item.label}
-                </span>
-                {item.description && (
-                  <span className="mobile-text-xs text-muted-foreground truncate block">
-                    {item.description}
-                  </span>
-                )}
-              </div>
-              {item.badge && (
-                <Badge variant="secondary" className="text-xs">
-                  {item.badge}
-                </Badge>
-              )}
-              <ChevronRight 
-                className={cn(
-                  "w-4 h-4 transition-transform duration-200",
-                  isExpanded && "rotate-90"
-                )} 
-              />
-            </>
+          <item.icon className={cn("mobile-icon flex-shrink-0", item.color || "text-muted-foreground")} />
+          <div className="flex-grow min-w-0">
+            <span className="mobile-text-sm font-medium truncate block">
+              {item.label}
+            </span>
+            {item.description && (
+              <span className="mobile-text-xs text-muted-foreground truncate block">
+                {item.description}
+              </span>
+            )}
+          </div>
+          {item.badge && (
+            <Badge variant="secondary" className="text-xs">
+              {item.badge}
+            </Badge>
+          )}
+          {hasChildren && (
+            <ChevronRight 
+              className={cn(
+                "w-4 h-4 transition-transform duration-200",
+                isExpanded && "rotate-90"
+              )} 
+            />
           )}
         </div>
 
@@ -462,13 +395,13 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
 
   const renderSettingsItem = (item: SettingsItem) => {
     return (
-      <div key={item.id} className="settings-item">
-        <div className="settings-item-info">
+      <div key={item.id} className="settings-item flex flex-col sm:flex-row items-start sm:items-center gap-4 py-4 px-2">
+        <div className="settings-item-info flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <item.icon className="mobile-icon text-muted-foreground" />
-            <span className="settings-item-title">{item.label}</span>
+            <item.icon className="mobile-icon text-muted-foreground w-5 h-5" />
+            <span className="settings-item-title text-sm font-medium">{item.label}</span>
           </div>
-          <p className="settings-item-description">{item.description}</p>
+          <p className="settings-item-description text-xs text-muted-foreground">{item.description}</p>
         </div>
         <div className="settings-control">
           {item.type === 'switch' && (
@@ -482,7 +415,7 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
             <select
               value={item.value}
               onChange={(e) => item.onChange?.(e.target.value)}
-              className="mobile-button bg-secondary text-secondary-foreground border border-white/10 rounded-lg px-3 py-2"
+              className="mobile-button bg-secondary text-secondary-foreground border border-white/10 rounded-lg px-3 py-2 text-sm"
             >
               {item.options?.map(option => (
                 <option key={option.value} value={option.value}>
@@ -575,11 +508,21 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
 
         {/* Quick Actions */}
         <div className="space-y-2">
-          <Button className="btn-primary w-full" onClick={() => setActiveView('navigation')}>
+          <Button 
+            className="btn-primary w-full" 
+            onClick={() => {
+              setActiveView('navigation');
+              handleNavigation('/quiz');
+            }}
+          >
             <Target className="mobile-icon mr-2" />
             Take Quiz
           </Button>
-          <Button variant="outline" className="w-full" onClick={() => setActiveView('settings')}>
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={() => setActiveView('settings')}
+          >
             <Settings className="mobile-icon mr-2" />
             Settings
           </Button>
@@ -602,37 +545,37 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
         return renderUserProfile();
       case 'settings':
         return (
-          <div className="py-4 space-y-6">
+          <div className="py-4 space-y-6 px-4">
             <div className="settings-section">
-              <h3 className="settings-section-title">Appearance</h3>
+              <h3 className="settings-section-title text-lg font-semibold mb-3">Appearance</h3>
               {settingsItems.slice(0, 4).map(renderSettingsItem)}
             </div>
 
             <div className="settings-section">
-              <h3 className="settings-section-title">Accessibility</h3>
+              <h3 className="settings-section-title text-lg font-semibold mb-3">Accessibility</h3>
               {settingsItems.slice(4, 8).map(renderSettingsItem)}
             </div>
 
             <div className="settings-section">
-              <h3 className="settings-section-title">Preferences</h3>
+              <h3 className="settings-section-title text-lg font-semibold mb-3">Preferences</h3>
               {settingsItems.slice(8).map(renderSettingsItem)}
             </div>
 
             <Separator />
 
             <div className="settings-section">
-              <h3 className="settings-section-title">About</h3>
+              <h3 className="settings-section-title text-lg font-semibold mb-3">About</h3>
               <div className="space-y-3">
-                <Button variant="ghost" className="w-full justify-start">
-                  <HelpCircle className="mobile-icon mr-3" />
+                <Button variant="ghost" className="w-full justify-start text-sm">
+                  <HelpCircle className="mobile-icon mr-3 w-5 h-5" />
                   Help & Support
                 </Button>
-                <Button variant="ghost" className="w-full justify-start">
-                  <Info className="mobile-icon mr-3" />
+                <Button variant="ghost" className="w-full justify-start text-sm">
+                  <Info className="mobile-icon mr-3 w-5 h-5" />
                   About QuizApp
                 </Button>
-                <Button variant="ghost" className="w-full justify-start">
-                  <Shield className="mobile-icon mr-3" />
+                <Button variant="ghost" className="w-full justify-start text-sm">
+                  <Shield className="mobile-icon mr-3 w-5 h-5" />
                   Privacy Policy
                 </Button>
               </div>
@@ -645,22 +588,14 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex relative pb-20 lg:pb-0">
+    <>
       {/* Mobile Overlay */}
-      {isMobileMenuOpen && (
+      {isOpen && (
         <div 
-          className="sidebar-overlay"
-          onClick={() => setIsMobileMenuOpen(false)}
+          className="sidebar-overlay lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+          onClick={onToggle}
         />
       )}
-
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 btn-icon btn-glass"
-      >
-        {isMobileMenuOpen ? <X className="mobile-icon" /> : <Menu className="mobile-icon" />}
-      </button>
 
       {/* Sidebar */}
       <aside className={cn(
@@ -744,26 +679,27 @@ export function Sidebar({ isOpen, onToggle, className }: SidebarProps) {
                   <p className="mobile-text-sm font-medium truncate">{user.username}</p>
                   <p className="mobile-text-xs text-muted-foreground">Level {userStats.level}</p>
                 </div>
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={handleLogout}
-                  className="mobile-button btn-danger flex items-center gap-2 justify-start"
+                  className="btn-icon text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                  title="Logout"
                 >
                   <LogOut className="mobile-icon" />
-                  <span className="mobile-text-sm">Logout</span>
-                </button>
+                </Button>
               </div>
             )}
           </div>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 lg:ml-80 mobile-container py-4 lg:py-8">
-        {renderContent()}
-      </div>
+      {/* Main Content Area - Removed as it duplicates renderContent() */}
+      {/* The main content should be rendered by the parent component using the sidebar's navigation */}
 
       {/* Mobile Navigation */}
-      <MobileNav activeTab={activeView} setActiveTab={setActiveView} />
-    </div>
+      {/* This component seems to be intended for the main app layout, not within the sidebar itself */}
+      {/* <MobileNav activeTab={activeView} setActiveTab={setActiveView} /> */}
+    </>
   );
 }

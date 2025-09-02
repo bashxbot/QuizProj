@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,199 +29,23 @@ import {
   PieChart,
   LineChart,
   Activity,
-  Globe,
-  Smartphone,
-  Monitor,
-  Tablet,
-  Watch,
-  Gamepad2,
-  Headphones,
-  Music,
-  Camera,
-  Video,
-  Image,
-  FileText,
-  Folder,
-  Download,
-  Upload,
-  Share,
-  Link,
-  Mail,
-  Phone,
-  MessageCircle,
-  Bell,
   Settings,
-  Search,
-  Filter,
-  Sort,
-  Grid,
-  List,
-  Map,
-  Bookmark,
-  Tag,
-  Flag,
-  Pin,
-  Archive,
-  Trash,
-  Edit,
-  Copy,
-  Scissors,
-  Clipboard,
-  Save,
-  Refresh,
-  RotateCcw,
-  RotateCw,
-  Maximize,
-  Minimize,
-  Plus,
-  Minus,
-  Check,
-  X,
+  CheckCircle,
   AlertCircle,
   Info,
-  CheckCircle,
-  AlertTriangle,
-  HelpCircle,
-  Eye,
-  EyeOff,
-  Lock,
-  Unlock,
-  Key,
-  UserPlus,
-  UserMinus,
-  UserCheck,
-  ThumbsUp,
-  ThumbsDown,
-  Smile,
-  Frown,
-  Meh,
-  Coffee,
   Gift,
   Sparkles,
   Rocket,
   Lightning,
-  Sun,
-  Moon,
-  CloudRain,
-  Umbrella,
-  Snowflake,
-  Wind,
-  Thermometer,
-  Compass,
-  Navigation,
-  MapPin,
-  Route,
-  Car,
-  Bike,
-  Train,
-  Plane,
-  Ship,
-  Bus,
-  Truck,
-  Taxi,
-  Home,
-  Building,
-  Store,
-  Factory,
-  School,
-  Hospital,
-  Bank,
-  Hotel,
-  Restaurant,
-  ShoppingCart,
-  CreditCard,
-  Wallet,
-  DollarSign,
-  Euro,
-  PoundSterling,
-  Yen,
-  Bitcoin,
-  TrendingDown,
-  PlusCircle,
-  MinusCircle,
-  PlayCircle,
-  PauseCircle,
-  StopCircle,
-  SkipBack,
-  SkipForward,
-  FastForward,
-  Rewind,
-  Volume,
-  Volume1,
+  Coffee,
+  Gamepad2,
+  UserPlus,
+  MessageCircle,
+  Bell,
   Volume2,
   VolumeX,
-  Mic,
-  MicOff,
-  Speaker,
-  RadioIcon,
-  Disc,
-  Cassette,
-  Vinyl,
-  Headset,
-  MousePointer,
-  Mouse,
-  Keyboard,
-  Printer,
-  Scanner,
-  Monitor as MonitorIcon,
-  Laptop,
-  TabletIcon,
-  SmartphoneIcon,
-  WatchIcon,
-  Cpu,
-  HardDrive,
-  MemoryStick,
-  Usb,
-  Wifi,
-  WifiOff,
-  Bluetooth,
-  BluetoothIcon,
-  Radio,
-  Signal,
-  SignalHigh,
-  SignalLow,
-  SignalMedium,
-  SignalZero,
-  Battery,
-  BatteryLow,
-  Plug,
-  Power,
-  PowerOff,
-  Loader,
-  Loader2,
-  MoreHorizontal,
-  MoreVertical,
-  Menu,
-  MenuSquare,
-  Sidebar,
-  PanelLeft,
-  PanelRight,
-  PanelTop,
-  PanelBottom,
-  Layout,
-  LayoutDashboard,
-  LayoutGrid,
-  LayoutList,
-  Columns,
-  Rows,
-  Square,
-  Circle,
-  Triangle,
-  Hexagon,
-  Pentagon,
-  Octagon,
-  Star as StarIcon,
-  Heart as HeartIcon,
-  Diamond as DiamondIcon,
-  Spade,
-  Club,
-  Clover,
-  Dice1,
-  Dice2,
-  Dice3,
-  Dice4,
-  Dice5,
-  Dice6
+  Moon,
+  Sun
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
@@ -288,11 +113,9 @@ interface DailyChallengeProgress {
 
 export function Dashboard() {
   const { user } = useAuth();
+  const [location, navigate] = useLocation();
   const [selectedTimeframe, setSelectedTimeframe] = useState<'daily' | 'weekly' | 'monthly' | 'all'>('weekly');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [showAchievements, setShowAchievements] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [showQuizSelection, setShowQuizSelection] = useState(false); // Added state for quiz selection
 
   // Update time every second
   useEffect(() => {
@@ -338,10 +161,10 @@ export function Dashboard() {
 
   // Mock data for demonstration
   const mockStats: DashboardStats = {
-    totalQuizzes: profile?.quizzesTaken || 0,
+    totalQuizzes: profile?.quizzesTaken || 47,
     averageScore: 87.3,
     currentStreak: 7,
-    totalPoints: profile?.totalScore || 0,
+    totalPoints: profile?.totalScore || 3250,
     globalRank: 142,
     level: 12,
     xp: 2847,
@@ -393,16 +216,6 @@ export function Dashboard() {
       progress: 75,
       maxProgress: 100,
       rarity: 'legendary'
-    },
-    {
-      id: '5',
-      title: 'Streak Champion',
-      description: 'Maintain a 30-day streak',
-      icon: Flame,
-      color: 'text-orange-400',
-      progress: 7,
-      maxProgress: 30,
-      rarity: 'epic'
     }
   ];
 
@@ -443,16 +256,6 @@ export function Dashboard() {
     reward: '50 XP + Rare Badge',
     timeRemaining: '14h 23m'
   };
-
-  const categories = [
-    { id: 'all', label: 'All Categories', count: 156 },
-    { id: 'web-dev', label: 'Web Development', count: 45 },
-    { id: 'android-dev', label: 'Android Development', count: 32 },
-    { id: 'reverse-eng', label: 'Reverse Engineering', count: 23 },
-    { id: 'ethical-hacking', label: 'Ethical Hacking', count: 28 },
-    { id: 'data-science', label: 'Data Science', count: 18 },
-    { id: 'machine-learning', label: 'Machine Learning', count: 10 }
-  ];
 
   const timeframes = [
     { id: 'daily', label: 'Today', icon: Calendar },
@@ -495,13 +298,48 @@ export function Dashboard() {
     return `${Math.floor(diffInMinutes / 1440)}d ago`;
   };
 
+  const quickActions = [
+    {
+      id: 'quick-quiz',
+      title: 'Quick Quiz',
+      description: 'Start a 5-minute challenge',
+      icon: Zap,
+      color: 'from-blue-500 to-cyan-500',
+      action: () => navigate('/quiz')
+    },
+    {
+      id: 'daily-challenge',
+      title: 'Daily Challenge',
+      description: 'Complete today\'s special quiz',
+      icon: Calendar,
+      color: 'from-green-500 to-emerald-500',
+      action: () => navigate('/quiz/daily')
+    },
+    {
+      id: 'leaderboard',
+      title: 'Leaderboard',
+      description: 'Check your ranking',
+      icon: Trophy,
+      color: 'from-yellow-500 to-orange-500',
+      action: () => navigate('/leaderboard')
+    },
+    {
+      id: 'achievements',
+      title: 'Achievements',
+      description: 'View your badges',
+      icon: Award,
+      color: 'from-purple-500 to-pink-500',
+      action: () => navigate('/achievements')
+    }
+  ];
+
   return (
-    <div className="mobile-container py-4 sm:py-6 lg:py-8 space-y-6 lg:space-y-8">
+    <div className="mobile-container py-4 sm:py-6 lg:py-8 space-y-6 lg:space-y-8 min-h-screen">
       {/* Welcome Header */}
-      <div className="modern-card">
+      <div className="modern-card animate-fade-in-up">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="mobile-text-2xl font-bold mb-2">
+          <div className="flex-grow">
+            <h1 className="mobile-text-2xl font-bold mb-2 bg-gradient-to-r from-primary via-purple-400 to-pink-400 bg-clip-text text-transparent">
               Welcome back, {user?.username}! 👋
             </h1>
             <p className="mobile-text-base text-muted-foreground">
@@ -512,7 +350,7 @@ export function Dashboard() {
                 day: 'numeric' 
               })}
             </p>
-            <p className="mobile-text-sm text-muted-foreground">
+            <p className="mobile-text-sm text-muted-foreground font-mono">
               {currentTime.toLocaleTimeString('en-US', { 
                 hour: '2-digit', 
                 minute: '2-digit',
@@ -520,12 +358,12 @@ export function Dashboard() {
               })}
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <div className="text-center">
               <div className="mobile-text-xl font-bold text-primary">Level {mockStats.level}</div>
               <div className="mobile-text-xs text-muted-foreground">Quiz Master</div>
             </div>
-            <Avatar className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-primary/20">
+            <Avatar className="w-12 h-12 sm:w-16 sm:h-16 border-2 border-primary/20 hover:border-primary/40 transition-colors">
               <AvatarFallback className="text-lg sm:text-xl font-bold bg-gradient-to-br from-primary to-purple-400 text-white">
                 {user?.username?.charAt(0).toUpperCase()}
               </AvatarFallback>
@@ -543,7 +381,7 @@ export function Dashboard() {
           </div>
           <Progress 
             value={(mockStats.xp / mockStats.nextLevelXp) * 100} 
-            className="h-3 bg-secondary"
+            className="h-3 bg-secondary animate-pulse"
           />
           <p className="mobile-text-xs text-muted-foreground">
             {mockStats.nextLevelXp - mockStats.xp} XP until Level {mockStats.level + 1}
@@ -551,14 +389,91 @@ export function Dashboard() {
         </div>
       </div>
 
+      {/* Quick Actions Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {quickActions.map((action, index) => (
+          <button
+            key={action.id}
+            onClick={action.action}
+            className={cn(
+              "modern-card p-4 sm:p-6 text-center hover:scale-105 transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-primary/30",
+              "animate-fade-in-up"
+            )}
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <div className={cn(
+              "w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br mx-auto mb-3 flex items-center justify-center",
+              action.color
+            )}>
+              <action.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+            </div>
+            <h3 className="mobile-text-sm sm:mobile-text-base font-semibold mb-1">{action.title}</h3>
+            <p className="mobile-text-xs text-muted-foreground">{action.description}</p>
+          </button>
+        ))}
+      </div>
+
+      {/* Stats Cards */}
+      <div className="dashboard-grid">
+        <Card className="dashboard-stat-card animate-bounce-in">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="dashboard-stat-label">Total Quizzes</p>
+                <p className="dashboard-stat-value">{mockStats.totalQuizzes}</p>
+              </div>
+              <Brain className="mobile-icon text-primary animate-pulse" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="dashboard-stat-card animate-bounce-in" style={{ animationDelay: '100ms' }}>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="dashboard-stat-label">Average Score</p>
+                <p className={`dashboard-stat-value ${getScoreColor(mockStats.averageScore)}`}>
+                  {mockStats.averageScore}%
+                </p>
+              </div>
+              <Target className="mobile-icon text-green-400" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="dashboard-stat-card animate-bounce-in" style={{ animationDelay: '200ms' }}>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="dashboard-stat-label">Current Streak</p>
+                <p className="dashboard-stat-value text-orange-400">{mockStats.currentStreak} days</p>
+              </div>
+              <Flame className="mobile-icon text-orange-400 animate-bounce" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="dashboard-stat-card animate-bounce-in" style={{ animationDelay: '300ms' }}>
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="dashboard-stat-label">Global Rank</p>
+                <p className="dashboard-stat-value text-yellow-400">#{mockStats.globalRank}</p>
+              </div>
+              <Trophy className="mobile-icon text-yellow-400 animate-glow" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Daily Challenge */}
-      <div className="modern-card">
+      <div className="modern-card animate-slide-in-left">
         <div className="flex items-center justify-between mb-4">
           <h2 className="mobile-text-lg font-semibold flex items-center gap-2">
             <Target className="mobile-icon text-primary" />
             Daily Challenge
           </h2>
-          <Badge variant="outline" className="mobile-text-xs">
+          <Badge variant="outline" className="mobile-text-xs animate-pulse">
             <Clock className="w-3 h-3 mr-1" />
             {dailyChallenge.timeRemaining}
           </Badge>
@@ -584,7 +499,11 @@ export function Dashboard() {
               <span className="mobile-text-sm">Reward: {dailyChallenge.reward}</span>
             </div>
             {!dailyChallenge.completed && (
-              <Button size="sm" className="mobile-button">
+              <Button 
+                size="sm" 
+                className="mobile-button hover:scale-105 transition-transform"
+                onClick={() => navigate('/quiz')}
+              >
                 <Zap className="mobile-icon mr-2" />
                 Start Quiz
               </Button>
@@ -593,75 +512,22 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Quick Stats Grid */}
-      <div className="dashboard-grid">
-        <Card className="dashboard-stat-card">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="dashboard-stat-label">Total Quizzes</p>
-                <p className="dashboard-stat-value">{mockStats.totalQuizzes}</p>
-              </div>
-              <Brain className="mobile-icon text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="dashboard-stat-card">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="dashboard-stat-label">Average Score</p>
-                <p className={`dashboard-stat-value ${getScoreColor(mockStats.averageScore)}`}>
-                  {mockStats.averageScore}%
-                </p>
-              </div>
-              <Target className="mobile-icon text-green-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="dashboard-stat-card">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="dashboard-stat-label">Current Streak</p>
-                <p className="dashboard-stat-value text-orange-400">{mockStats.currentStreak} days</p>
-              </div>
-              <Flame className="mobile-icon text-orange-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="dashboard-stat-card">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="dashboard-stat-label">Global Rank</p>
-                <p className="dashboard-stat-value text-yellow-400">#{mockStats.globalRank}</p>
-              </div>
-              <Trophy className="mobile-icon text-yellow-400" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Main Content Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 h-auto p-1">
-          <TabsTrigger value="overview" className="mobile-text-sm py-2 px-3">
-            <LayoutDashboard className="mobile-icon mr-2" />
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1 h-auto p-1 bg-secondary/50">
+          <TabsTrigger value="overview" className="mobile-text-sm py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <Activity className="mobile-icon mr-2" />
             Overview
           </TabsTrigger>
-          <TabsTrigger value="recent" className="mobile-text-sm py-2 px-3">
+          <TabsTrigger value="recent" className="mobile-text-sm py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Clock className="mobile-icon mr-2" />
             Recent
           </TabsTrigger>
-          <TabsTrigger value="achievements" className="mobile-text-sm py-2 px-3">
+          <TabsTrigger value="achievements" className="mobile-text-sm py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Award className="mobile-icon mr-2" />
             Achievements
           </TabsTrigger>
-          <TabsTrigger value="social" className="mobile-text-sm py-2 px-3">
+          <TabsTrigger value="social" className="mobile-text-sm py-3 px-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
             <Users className="mobile-icon mr-2" />
             Social
           </TabsTrigger>
@@ -728,8 +594,8 @@ export function Dashboard() {
             <CardContent>
               <div className="h-64 sm:h-80 flex items-center justify-center text-muted-foreground">
                 <div className="text-center">
-                  <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                  <p className="mobile-text-base">Performance charts coming soon</p>
+                  <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50 animate-pulse" />
+                  <p className="mobile-text-base font-medium">Performance charts coming soon</p>
                   <p className="mobile-text-sm">Track your progress over time</p>
                 </div>
               </div>
@@ -763,8 +629,11 @@ export function Dashboard() {
 
             <ScrollArea className="h-64 sm:h-80">
               <div className="space-y-3">
-                {(quizHistory || []).slice(0, 10).map((attempt: QuizAttempt) => (
-                  <div key={attempt.id} className="flex items-center gap-4 p-3 rounded-lg glass-light">
+                {(quizHistory || []).slice(0, 10).map((attempt: QuizAttempt, index: number) => (
+                  <div 
+                    key={attempt.id || index} 
+                    className="flex items-center gap-4 p-3 rounded-lg glass-light hover:bg-white/10 transition-colors"
+                  >
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-400 flex items-center justify-center">
                       <Brain className="w-5 h-5 text-white" />
                     </div>
@@ -796,6 +665,13 @@ export function Dashboard() {
                     <Brain className="w-12 h-12 mx-auto mb-4 opacity-50" />
                     <p className="mobile-text-base">No recent quiz attempts</p>
                     <p className="mobile-text-sm">Take your first quiz to see your progress here</p>
+                    <Button 
+                      className="mt-4 mobile-button"
+                      onClick={() => navigate('/quiz')}
+                    >
+                      <Zap className="mobile-icon mr-2" />
+                      Start Your First Quiz
+                    </Button>
                   </div>
                 )}
               </div>
@@ -804,44 +680,18 @@ export function Dashboard() {
         </TabsContent>
 
         <TabsContent value="achievements" className="space-y-6">
-          {/* Achievement Categories */}
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="default"
-              size="sm"
-              className="mobile-button"
-            >
-              <Award className="mobile-icon mr-2" />
-              All Achievements
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mobile-button"
-            >
-              <CheckCircle className="mobile-icon mr-2" />
-              Unlocked
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              className="mobile-button"
-            >
-              <Lock className="mobile-icon mr-2" />
-              Locked
-            </Button>
-          </div>
-
           {/* Achievements Grid */}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {mockAchievements.map(achievement => (
+            {mockAchievements.map((achievement, index) => (
               <div 
                 key={achievement.id}
                 className={cn(
-                  "modern-card border-2 transition-all duration-300",
+                  "modern-card border-2 transition-all duration-300 hover:scale-105",
                   getRarityColor(achievement.rarity),
-                  achievement.unlockedAt ? "opacity-100" : "opacity-60"
+                  achievement.unlockedAt ? "opacity-100" : "opacity-60",
+                  "animate-bounce-in"
                 )}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="flex items-start gap-3">
                   <div className={cn(
@@ -904,8 +754,12 @@ export function Dashboard() {
             </div>
 
             <div className="space-y-3">
-              {mockFriends.map(friend => (
-                <div key={friend.id} className="flex items-center gap-4 p-3 rounded-lg glass-light">
+              {mockFriends.map((friend, index) => (
+                <div 
+                  key={friend.id} 
+                  className="flex items-center gap-4 p-3 rounded-lg glass-light hover:bg-white/10 transition-colors animate-slide-in-right"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
                   <div className="relative">
                     <Avatar className="w-10 h-10">
                       <AvatarFallback className="bg-gradient-to-br from-primary to-purple-400 text-white">
@@ -955,14 +809,23 @@ export function Dashboard() {
                 <Trophy className="mobile-icon text-primary" />
                 Global Leaderboard
               </h3>
-              <Button size="sm" variant="outline" className="mobile-button">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="mobile-button"
+                onClick={() => navigate('/leaderboard')}
+              >
                 View Full
               </Button>
             </div>
 
             <div className="space-y-2">
               {(leaderboard || []).slice(0, 5).map((entry: any, index: number) => (
-                <div key={entry.id} className="flex items-center gap-4 p-3 rounded-lg glass-light">
+                <div 
+                  key={entry.id || index} 
+                  className="flex items-center gap-4 p-3 rounded-lg glass-light hover:bg-white/10 transition-colors animate-slide-in-left"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
                   <div className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center font-bold mobile-text-sm",
                     index === 0 && "bg-gradient-to-br from-yellow-400 to-yellow-600 text-yellow-900",
@@ -998,29 +861,6 @@ export function Dashboard() {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Quick Actions */}
-      <div className="modern-card">
-        <h3 className="mobile-text-lg font-semibold mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <Button className="btn-primary h-auto py-4 flex-col gap-2">
-            <Zap className="mobile-icon" />
-            <span className="mobile-text-sm font-medium">Quick Quiz</span>
-          </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <Calendar className="mobile-icon" />
-            <span className="mobile-text-sm font-medium">Daily Challenge</span>
-          </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <Trophy className="mobile-icon" />
-            <span className="mobile-text-sm font-medium">Leaderboard</span>
-          </Button>
-          <Button variant="outline" className="h-auto py-4 flex-col gap-2">
-            <Settings className="mobile-icon" />
-            <span className="mobile-text-sm font-medium">Settings</span>
-          </Button>
-        </div>
-      </div>
     </div>
   );
 }

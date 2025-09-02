@@ -1,293 +1,207 @@
-
 import { useState } from "react";
+import { useLocation } from "wouter";
 import Navbar from "@/components/layout/navbar";
-import Sidebar from "@/components/layout/sidebar";
-import Dashboard from "@/components/dashboard/dashboard";
+import { Sidebar } from "@/components/layout/sidebar";
+import { Dashboard } from "@/components/dashboard/dashboard";
 import QuizSelection from "@/components/quiz/quiz-selection";
 import ActiveQuiz from "@/components/quiz/active-quiz";
 import QuizResults from "@/components/quiz/quiz-results";
 import Leaderboard from "@/components/leaderboard/leaderboard";
 import Profile from "@/components/profile/profile";
+import MobileNav from "@/components/layout/mobile-nav";
 import { useQuizState } from "@/hooks/use-quiz-state";
-import { Sparkles, Zap, Crown } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
+import { Menu } from "lucide-react";
 
-export type Section = "dashboard" | "quiz" | "leaderboard" | "profile";
+export type Section = "dashboard" | "quiz" | "leaderboard" | "profile" | "settings" | "achievements" | "stats";
 
 export default function HomePage() {
-  // Load persisted section from localStorage
-  const getInitialSection = (): Section => {
-    try {
-      // First check if there's a quiz state that should take precedence
-      const saved = localStorage.getItem('quizState');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Return quiz section if there's an active quiz, quiz results, or current quiz
-        if (parsed.currentQuiz && (parsed.isQuizActive || parsed.quizResults)) {
-          return "quiz";
-        }
-      }
-      
-      // Then check saved section
-      const savedSection = localStorage.getItem('currentSection');
-      if (savedSection && ['dashboard', 'quiz', 'leaderboard', 'profile'].includes(savedSection)) {
-        return savedSection as Section;
-      }
-    } catch (error) {
-      console.warn('Failed to load persisted section:', error);
-    }
-    return "dashboard";
-  };
+  const [location] = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<Section>("dashboard");
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const { quizState, setCurrentQuiz, setIsQuizActive, resetQuizState } = useQuizState();
 
-  const [currentSection, setCurrentSection] = useState<Section>(getInitialSection);
-  const { quizState, setCurrentQuiz, setQuizResults, resetQuizState } = useQuizState();
+  // Generate quiz mutation
+  const generateQuizMutation = useMutation({
+    mutationFn: async ({ topic, difficulty }: { topic: string; difficulty: string }) => {
+      const response = await fetch('/api/generate-quiz', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          field: topic,
+          questionCount: 10,
+          difficulty: difficulty
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(error || 'Failed to generate quiz');
+      }
+
+      return response.json();
+    },
+    onSuccess: (quiz) => {
+      setCurrentQuiz(quiz);
+      setIsQuizActive(true);
+      setActiveSection("quiz");
+    },
+    onError: (error) => {
+      console.error('Quiz generation failed:', error);
+      alert('Failed to generate quiz. Please try again.');
+    }
+  });
+
+  const handleStartQuiz = (topic: string, difficulty: string) => {
+    generateQuizMutation.mutate({ topic, difficulty });
+  };
 
   const handleSectionChange = (section: Section) => {
-    setCurrentSection(section);
-    // Always save current section to localStorage
-    try {
-      localStorage.setItem('currentSection', section);
-    } catch (error) {
-      console.warn('Failed to save section:', error);
+    setActiveSection(section);
+    setActiveTab(section);
+    // Close mobile sidebar
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
     }
   };
 
-  const handleQuizStart = (quiz: any) => {
-    setCurrentQuiz(quiz);
-  };
-
-  const handleQuizComplete = (results: any) => {
-    setQuizResults(results);
-  };
-
-  const handleStartQuiz = () => {
-    // Clear any existing quiz state when starting fresh
-    resetQuizState();
-    setCurrentSection("quiz");
-  };
-
-  const getSectionTitle = () => {
-    switch (currentSection) {
-      case "dashboard":
-        return "Command Center";
-      case "quiz":
-        if (quizState.quizResults && quizState.currentQuiz) {
-          return "Quiz Results";
-        }
-        if (quizState.currentQuiz && quizState.isQuizActive) {
-          return "Active Challenge";
-        }
-        return "Quiz Arena";
-      case "leaderboard":
-        return "Hall of Fame";
-      case "profile":
-        return "Your Profile";
-      default:
-        return "QuizMaster Pro";
+  const renderMainContent = () => {
+    // Handle quiz flow
+    if (quizState.isQuizActive && quizState.currentQuiz) {
+      if (quizState.quizResults) {
+        return (
+          <QuizResults 
+            onTakeAnother={() => {
+              resetQuizState();
+              setActiveSection("quiz");
+            }}
+            onViewLeaderboard={() => setActiveSection("leaderboard")}
+          />
+        );
+      }
+      return <ActiveQuiz />;
     }
-  };
 
-  const getSectionDescription = () => {
-    switch (currentSection) {
+    // Handle section-based navigation
+    switch (activeSection) {
       case "dashboard":
-        return "Your learning journey starts here. Track progress, view achievements, and discover new challenges.";
+        return <Dashboard />;
       case "quiz":
-        if (quizState.quizResults && quizState.currentQuiz) {
-          return "Challenge completed! Review your performance and see how you stack up.";
-        }
-        if (quizState.currentQuiz && quizState.isQuizActive) {
-          return "Test your knowledge and push your limits. Every question counts!";
-        }
-        return "Choose your battlefield. Select a topic and difficulty to begin your challenge.";
-      case "leaderboard":
-        return "See how you rank against other quiz masters. Climb the ranks and claim your crown!";
-      case "profile":
-        return "Manage your account, view statistics, and customize your quiz experience.";
-      default:
-        return "Welcome to the ultimate quiz experience.";
-    }
-  };
-
-  const renderContent = () => {
-    switch (currentSection) {
-      case "dashboard":
-        return <Dashboard onSectionChange={handleSectionChange} />;
-      case "quiz":
-        // Show results if available
-        if (quizState.quizResults && quizState.currentQuiz) {
-          return (
-            <QuizResults
-              results={quizState.quizResults}
-              onTakeAnother={() => {
-                resetQuizState();
-                setCurrentSection("quiz");
-              }}
-              onViewLeaderboard={() => {
-                setCurrentSection("leaderboard");
-              }}
-            />
-          );
-        }
-        // Show active quiz if there's a current quiz and it's active
-        if (quizState.currentQuiz && quizState.isQuizActive) {
-          return (
-            <ActiveQuiz
-              quiz={quizState.currentQuiz}
-              onQuizComplete={handleQuizComplete}
-            />
-          );
-        }
-        // Show quiz selection by default
-        return <QuizSelection onStartQuiz={handleQuizStart} isLoading={false} />;
+        return (
+          <QuizSelection 
+            onStartQuiz={handleStartQuiz}
+            isLoading={generateQuizMutation.isPending}
+          />
+        );
       case "leaderboard":
         return <Leaderboard />;
       case "profile":
         return <Profile />;
       default:
-        return <Dashboard onSectionChange={handleSectionChange} />;
+        return <Dashboard />;
     }
   };
 
+  // Determine current section based on URL or quiz state
+  const getCurrentSection = (): Section => {
+    if (quizState.isQuizActive) return "quiz";
+
+    if (location.includes('/quiz')) return "quiz";
+    if (location.includes('/leaderboard')) return "leaderboard";
+    if (location.includes('/profile')) return "profile";
+    if (location.includes('/achievements')) return "achievements";
+    if (location.includes('/stats')) return "stats";
+
+    return "dashboard";
+  };
+
+  // Update active section when location changes
+  useState(() => {
+    const currentSection = getCurrentSection();
+    setActiveSection(currentSection);
+    setActiveTab(currentSection);
+  });
+
   return (
-    <div className="page-container">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full animate-float"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full animate-float" style={{animationDelay: "2s"}}></div>
-        <div className="absolute bottom-32 left-20 w-40 h-40 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full animate-float" style={{animationDelay: "4s"}}></div>
-        <div className="absolute bottom-20 right-10 w-28 h-28 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-full animate-float" style={{animationDelay: "1s"}}></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-glass-heavy backdrop-blur-lg border-b border-white/10 p-4">
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="btn-icon btn-glass"
+            aria-label="Open menu"
+          >
+            <Menu className="mobile-icon" />
+          </button>
+
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-gradient-to-br from-primary to-purple-400 flex items-center justify-center">
+              <span className="text-white text-xs font-bold">Q</span>
+            </div>
+            <span className="font-bold text-white">QuizApp</span>
+          </div>
+
+          <div className="w-10"></div> {/* Spacer for centering */}
+        </div>
       </div>
 
-      <Navbar 
-        currentSection={currentSection}
-        onSectionChange={handleSectionChange}
-      />
-      
-      <div className="flex pt-20 min-h-screen">
-        <Sidebar 
-          currentSection={currentSection} 
-          onSectionChange={handleSectionChange} 
+      {/* Desktop Navbar */}
+      <div className="hidden lg:block">
+        <Navbar 
+          onSectionChange={handleSectionChange}
+          activeSection={activeSection}
         />
-        
-        <main className="flex-1 relative z-10">
-          {/* Enhanced Page Header */}
-          <div className="sticky top-20 z-20 backdrop-blur-xl bg-slate-900/50 border-b border-white/10">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 py-8">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-6">
-                  <div className="relative">
-                    <div className="w-16 h-16 rounded-3xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-purple-500/30 animate-pulse-glow">
-                      <Crown className="h-8 w-8 text-white" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full animate-bounce">
-                      <Sparkles className="h-4 w-4 text-white m-1" />
-                    </div>
-                  </div>
-                  <div>
-                    <h1 className="text-4xl lg:text-5xl font-black gradient-text leading-tight animate-slide-in">
-                      {getSectionTitle()}
-                    </h1>
-                    <p className="text-lg text-white/70 mt-2 animate-slide-in" style={{animationDelay: "0.2s"}}>
-                      {getSectionDescription()}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="hidden lg:flex items-center space-x-4 animate-slide-in" style={{animationDelay: "0.4s"}}>
-                  <div className="glass-morphism px-6 py-3 rounded-2xl border border-primary/30">
-                    <div className="flex items-center space-x-3">
-                      <Zap className="h-5 w-5 text-yellow-400 animate-sparkle" />
-                      <span className="text-white font-semibold">Pro Member</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      </div>
 
-          {/* Main Content Area */}
-          <div className="px-6 md:px-8 lg:px-12 py-8 lg:py-12">
-            <div className="max-w-7xl mx-auto">
-              <div className="animate-slide-up">
-                {renderContent()}
-              </div>
-            </div>
-          </div>
+      {/* Layout Container */}
+      <div className="flex">
+        {/* Sidebar */}
+        <Sidebar 
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="lg:relative lg:translate-x-0"
+        />
 
-          {/* Enhanced Footer */}
-          <footer className="mt-16 border-t border-white/10 bg-slate-900/50 backdrop-blur-xl">
-            <div className="max-w-7xl mx-auto px-6 lg:px-12 py-12">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div className="md:col-span-2">
-                  <div className="flex items-center space-x-4 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <Crown className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <span className="text-2xl font-black gradient-text">QuizMaster</span>
-                      <div className="text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent -mt-1">Pro</div>
-                    </div>
-                  </div>
-                  <p className="text-white/60 text-lg leading-relaxed mb-6">
-                    The ultimate AI-powered quiz platform. Challenge yourself, compete with others, and expand your knowledge across countless topics.
-                  </p>
-                  <div className="flex items-center space-x-4">
-                    <div className="glass-morphism px-4 py-2 rounded-xl border border-green-500/30">
-                      <span className="text-green-400 font-semibold">✨ AI-Powered</span>
-                    </div>
-                    <div className="glass-morphism px-4 py-2 rounded-xl border border-blue-500/30">
-                      <span className="text-blue-400 font-semibold">🚀 Real-time</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-6">Quick Links</h3>
-                  <div className="space-y-3">
-                    {[
-                      { label: "Dashboard", action: () => handleSectionChange("dashboard") },
-                      { label: "Take Quiz", action: () => handleSectionChange("quiz") },
-                      { label: "Leaderboard", action: () => handleSectionChange("leaderboard") },
-                      { label: "Profile", action: () => handleSectionChange("profile") }
-                    ].map((link, i) => (
-                      <button
-                        key={i}
-                        onClick={link.action}
-                        className="block text-white/60 hover:text-white transition-colors duration-300 hover:translate-x-2"
-                      >
-                        {link.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-6">Stats</h3>
-                  <div className="space-y-4">
-                    <div className="glass-morphism p-4 rounded-xl border border-white/10">
-                      <div className="text-2xl font-bold gradient-text">1M+</div>
-                      <div className="text-white/60">Questions Answered</div>
-                    </div>
-                    <div className="glass-morphism p-4 rounded-xl border border-white/10">
-                      <div className="text-2xl font-bold gradient-text">50K+</div>
-                      <div className="text-white/60">Active Users</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p className="text-white/50 text-center md:text-left">
-                  © 2024 QuizMaster Pro. Powered by cutting-edge AI technology.
-                </p>
-                <div className="flex items-center space-x-2 mt-4 md:mt-0">
-                  <Sparkles className="h-4 w-4 text-yellow-400 animate-sparkle" />
-                  <span className="text-white/60">Made with passion for learning</span>
-                </div>
-              </div>
-            </div>
-          </footer>
+        {/* Main Content */}
+        <main className={cn(
+          "flex-1 min-h-screen transition-all duration-300",
+          "pt-20 lg:pt-0", // Add top padding for mobile header
+          "pb-20 lg:pb-0", // Add bottom padding for mobile nav
+          isSidebarOpen && "lg:ml-0" // No margin adjustment needed on desktop
+        )}>
+          <div className="container mx-auto">
+            {renderMainContent()}
+          </div>
         </main>
       </div>
+
+      {/* Mobile Navigation */}
+      <MobileNav 
+        activeTab={activeTab}
+        setActiveTab={(tab) => {
+          setActiveTab(tab);
+          handleSectionChange(tab as Section);
+        }}
+      />
+
+      {/* Loading Overlay */}
+      {generateQuizMutation.isPending && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+          <div className="modern-card p-8 text-center max-w-sm mx-4">
+            <div className="animate-spin w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+            <h3 className="mobile-text-lg font-semibold mb-2">Generating Your Quiz</h3>
+            <p className="mobile-text-sm text-muted-foreground">
+              Creating personalized questions just for you...
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
