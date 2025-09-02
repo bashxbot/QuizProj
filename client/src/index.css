@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -61,7 +60,7 @@ html {
   @apply font-medium;
   @apply transition-all duration-200;
   @apply active:scale-95;
-  @apply focus:outline-none focus:ring-2 focus:ring-primary/50;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
 }
 
 .mobile-icon {
@@ -125,36 +124,36 @@ html {
 
 .glass-primary {
   @apply glass-base;
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.1) 0%, 
+  background: linear-gradient(135deg,
+    rgba(139, 92, 246, 0.1) 0%,
     rgba(79, 70, 229, 0.05) 100%);
 }
 
 .glass-secondary {
   @apply glass-base;
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.1) 0%, 
+  background: linear-gradient(135deg,
+    rgba(59, 130, 246, 0.1) 0%,
     rgba(37, 99, 235, 0.05) 100%);
 }
 
 .glass-success {
   @apply glass-base;
-  background: linear-gradient(135deg, 
-    rgba(34, 197, 94, 0.1) 0%, 
+  background: linear-gradient(135deg,
+    rgba(34, 197, 94, 0.1) 0%,
     rgba(22, 163, 74, 0.05) 100%);
 }
 
 .glass-warning {
   @apply glass-base;
-  background: linear-gradient(135deg, 
-    rgba(251, 191, 36, 0.1) 0%, 
+  background: linear-gradient(135deg,
+    rgba(251, 191, 36, 0.1) 0%,
     rgba(245, 158, 11, 0.05) 100%);
 }
 
 .glass-danger {
   @apply glass-base;
-  background: linear-gradient(135deg, 
-    rgba(239, 68, 68, 0.1) 0%, 
+  background: linear-gradient(135deg,
+    rgba(239, 68, 68, 0.1) 0%,
     rgba(220, 38, 38, 0.05) 100%);
 }
 
@@ -174,9 +173,9 @@ html {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.4) 50%, 
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
     transparent 100%);
 }
 
@@ -184,9 +183,9 @@ html {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, 
-    rgba(139, 92, 246, 0.05) 0%, 
-    transparent 50%, 
+  background: linear-gradient(135deg,
+    rgba(139, 92, 246, 0.05) 0%,
+    transparent 50%,
     rgba(79, 70, 229, 0.05) 100%);
   pointer-events: none;
   transition: opacity 0.5s ease;
@@ -220,39 +219,39 @@ html {
 
 .btn-primary {
   @apply btn-base bg-primary text-primary-foreground;
-  @apply hover:bg-primary/90 focus:ring-primary/50;
+  @apply hover:bg-primary/90 focus:ring-primary focus:ring-opacity-50;
   @apply shadow-lg hover:shadow-xl;
-  background: linear-gradient(135deg, 
-    hsl(var(--primary)) 0%, 
+  background: linear-gradient(135deg,
+    hsl(var(--primary)) 0%,
     hsl(var(--primary) / 0.8) 100%);
 }
 
 .btn-secondary {
   @apply btn-base bg-secondary text-secondary-foreground;
-  @apply hover:bg-secondary/80 focus:ring-secondary/50;
+  @apply hover:bg-secondary/80 focus:ring-secondary focus:ring-opacity-50;
 }
 
 .btn-outline {
   @apply btn-base border-primary text-primary;
   @apply hover:bg-primary hover:text-primary-foreground;
-  @apply focus:ring-primary/50;
+  @apply focus:ring-primary focus:ring-opacity-50;
 }
 
 .btn-ghost {
   @apply btn-base hover:bg-accent hover:text-accent-foreground;
-  @apply focus:ring-accent/50;
+  @apply focus:ring-accent focus:ring-opacity-50;
 }
 
 .btn-danger {
   @apply btn-base bg-destructive text-destructive-foreground;
-  @apply hover:bg-destructive/90 focus:ring-destructive/50;
+  @apply hover:bg-destructive/90 focus:ring-destructive focus:ring-opacity-50;
 }
 
 .btn-glass {
   @apply btn-base glass-medium backdrop-blur-md;
   @apply text-white border-white/20;
   @apply hover:bg-white/20 hover:border-white/30;
-  @apply focus:ring-white/50;
+  @apply focus:ring-white focus:ring-opacity-50;
 }
 
 .btn-glow {
@@ -418,7 +417,7 @@ html {
   @apply glass-light border border-white/10;
   @apply text-left transition-all duration-200;
   @apply hover:bg-white/10 hover:border-primary/30;
-  @apply focus:outline-none focus:ring-2 focus:ring-primary/50;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50;
   @apply min-h-[56px] sm:min-h-[64px];
   @apply flex items-center gap-3;
 }
@@ -784,11 +783,11 @@ html {
   .no-print {
     display: none !important;
   }
-  
+
   .print-only {
     display: block !important;
   }
-  
+
   .modern-card {
     break-inside: avoid;
     page-break-inside: avoid;
@@ -803,7 +802,7 @@ html {
     background: rgba(255, 255, 255, 0.9);
     color: black;
   }
-  
+
   .btn-primary {
     background: #000;
     color: #fff;
@@ -818,7 +817,7 @@ html {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .animate-float,
   .animate-glow,
   .animate-shimmer,
@@ -832,7 +831,7 @@ html {
 
 /* Focus Visible */
 .focus-visible {
-  @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+  @apply outline-none ring-2 ring-primary focus:ring-opacity-50 ring-offset-2 ring-offset-background;
 }
 
 /* Selection */
@@ -865,16 +864,16 @@ html {
   .mobile-only {
     display: block !important;
   }
-  
+
   .desktop-only {
     display: none !important;
   }
-  
+
   .mobile-full-width {
     width: 100vw;
     margin-left: calc(-50vw + 50%);
   }
-  
+
   .mobile-safe-padding {
     padding-left: max(16px, env(safe-area-inset-left));
     padding-right: max(16px, env(safe-area-inset-right));
@@ -885,7 +884,7 @@ html {
   .mobile-only {
     display: none !important;
   }
-  
+
   .desktop-only {
     display: block !important;
   }
