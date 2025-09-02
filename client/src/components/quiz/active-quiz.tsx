@@ -200,10 +200,10 @@ export default function ActiveQuiz() {
               <button
                 key={index}
                 onClick={() => handleAnswerSelect(index)}
-                className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200 ${
+                className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-300 transform hover:scale-[1.02] ${
                   quizState.currentAnswers[currentQuestionIndex] === index
-                    ? "border-primary bg-primary/5 text-primary font-medium"
-                    : "border-border hover:border-primary/50 hover:bg-accent/50"
+                    ? "border-blue-500 bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 text-blue-700 dark:text-blue-300 font-medium shadow-md"
+                    : "border-gray-200 dark:border-gray-700 hover:border-blue-400 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 dark:hover:from-gray-800/50 dark:hover:to-gray-700/50 hover:shadow-sm"
                 }`}
                 data-testid={`option-${index}`}
               >

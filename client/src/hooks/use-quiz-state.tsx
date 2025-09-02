@@ -24,6 +24,9 @@ interface QuizResults {
   score: number;
   pointsEarned: number;
   correctAnswers: Question[];
+  userAnswers: number[];
+  totalQuestions: number;
+  timeSpent?: number;
 }
 
 interface QuizState {
